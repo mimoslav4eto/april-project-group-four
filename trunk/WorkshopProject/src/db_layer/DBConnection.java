@@ -62,7 +62,7 @@ public class DBConnection
 		}
 	}
 	
-	public DBConnection get_instance()
+	public static DBConnection get_instance()
 	{
 		if (instance == null)
 		{

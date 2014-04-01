@@ -6,9 +6,9 @@ public class Product
 {
 	private String id;
 	private String name;
-	private double retail_price;
-	private double price;
-	private double rent_price;
+	private float retail_price;
+	private float price;
+	private float rent_price;
 	private int min_amount;
 	private ArrayList<Supplier> supplied_by;
 	
@@ -44,37 +44,37 @@ public class Product
 	}
 
 
-	public double getRetail_price()
+	public float getRetail_price()
 	{
 		return retail_price;
 	}
 
 
-	public void setRetail_price(double retail_price)
+	public void setRetail_price(float retail_price)
 	{
 		this.retail_price = retail_price;
 	}
 
 
-	public double getPrice()
+	public float getPrice()
 	{
 		return price;
 	}
 
 
-	public void setPrice(double price)
+	public void setPrice(float price)
 	{
 		this.price = price;
 	}
 
 
-	public double getRent_price()
+	public float getRent_price()
 	{
 		return rent_price;
 	}
 
 
-	public void setRent_price(double rent_price)
+	public void setRent_price(float rent_price)
 	{
 		this.rent_price = rent_price;
 	}

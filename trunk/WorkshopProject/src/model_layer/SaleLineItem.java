@@ -2,12 +2,12 @@ package model_layer;
 
 public class SaleLineItem extends LineItem
 {
-	private double total_price;
+	private float total_price;
 	public SaleLineItem()
 	{
 		// TODO Auto-generated constructor stub
 	}
-	public double getTotal_price()
+	public float getTotal_price()
 	{
 		return total_price;
 	}
