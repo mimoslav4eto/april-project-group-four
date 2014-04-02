@@ -29,9 +29,14 @@ public class DBCustomer
 		return multiple_where("", "", -1);
 	}
 	
+	public ArrayList<CustomerType> get_all_types()
+	{
+		return multiple_where_type("", "", -1);
+	}
+	
 	public int insert_customer(Customer cust)
 	{
-		System.out.println("User to be inserted: " + cust.getName());
+		
 		int rc = -1;
 		String name = cust.getName();
 		String email = cust.getEmail();
@@ -41,6 +46,7 @@ public class DBCustomer
 		String preferences = cust.getPreferences();
 		String address = cust.getAddress();
 		int t_id = cust.getCust_type().getId();
+		System.out.println("User to be inserted: " + name);
 		try
 		{
 			PreparedStatement stmt;
@@ -50,6 +56,8 @@ public class DBCustomer
 				stmt.setString(1, zipcode);
 				stmt.setString(2, city);
 				stmt.setString(3, "Denmark");
+				stmt.executeUpdate();
+				stmt.executeUpdate();
 				stmt.close();
 			}
 			int id = GetMax.get_max_id("SELECT id FROM Entity");
@@ -62,7 +70,7 @@ public class DBCustomer
 			stmt.setString(6, zipcode);
 			stmt.setString(7, "customer");
 			stmt.setQueryTimeout(5);
-			rc = stmt.executeUpdate();
+			rc += stmt.executeUpdate();
 			stmt.close();
 			
 			stmt = make_insert_statement("Customer", "id, t_id, preferences");
@@ -70,13 +78,42 @@ public class DBCustomer
 			stmt.setInt(2, t_id);
 			stmt.setString(3, preferences);
 			stmt.setQueryTimeout(5);
+			rc += stmt.executeUpdate();
 			stmt.close();
 		}
-		catch (SQLException ex)
+		catch (SQLException se)
 		{
-			System.out.println("Error while inserting: " + ex);
+			System.out.println("Error while inserting: " + se);
 		}
 		return rc;
+	}
+	
+	public int insert_customer_type(CustomerType ct)
+	{
+		int rc = -1;
+		int id = ct.getId();
+		float disc_perc = ct.getDisc_perc();
+		float pr_qual_free_ship = ct.getPrice_qual_for_free_shipment();
+		float pr_qual_disc = ct.getPrice_qual_for_disc();
+		System.out.println("Inserting customer type: " + id);
+		
+		try
+		{
+			PreparedStatement stmt = make_insert_statement("CustomerType", "id, disc_perc, pr_qual_disc, pr_qual_free_ship");
+			stmt.setInt(1, id);
+			stmt.setFloat(2, disc_perc);
+			stmt.setFloat(3, pr_qual_disc);
+			stmt.setFloat(4, pr_qual_free_ship);
+			rc = stmt.executeUpdate();
+			stmt.close();
+		}
+		catch(SQLException se)
+		{
+			System.out.println("Error while inserting customer type: " + se);
+		}
+		return rc;
+		
+		
 	}
 	
 	private boolean zip_code_exists(String zipcode)
@@ -143,6 +180,29 @@ public class DBCustomer
 		return cust;
 	}
 	
+	private ArrayList<CustomerType> multiple_where_type(String var, String where_clause, int int_where_clause)
+	{
+		ResultSet results;
+	    ArrayList<CustomerType> types= new ArrayList<CustomerType>();	
+	    String query = make_customer_type_query(var);
+	    try
+		{
+			PreparedStatement stmt = prepare_statement(query, where_clause, int_where_clause);
+			stmt.setQueryTimeout(5);
+			results = stmt.executeQuery();
+			while(results.next())
+			{
+				types.add(create_type(results));
+			}
+			stmt.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println("Query exception: " + e);
+		}
+	 return types;   
+	}
+	
 	private ArrayList<Customer> multiple_where(String var, String where_clause, int int_where_clause)
 	{
 		ResultSet results;
@@ -170,12 +230,22 @@ public class DBCustomer
 	private String make_complete_query(String var)
 	{
 		String query = "SELECT e.id, e.name, e.phone_nr, e.email, c.preferences, "
-				+ "ct.pr_qual_disc, ct.dic_perc, ct.pr_qual_free_ship, ct.id, z.zipcode, z.city "
+				+ "ct.pr_qual_disc, ct.disc_perc, ct.pr_qual_free_ship, ct.id, z.zipcode, z.city "
 				+ "FROM Entity AS e, Customer AS c, ZipCity AS z, CustomerType AS ct "
 				+ "WHERE type='Customer', e.id = c.id, z.zipcode = e.zipcode, c.t_id = ct.id";
 		if (var.length() > 0)
 		{
 			query += ", " + var + "?";
+		}
+		return query;
+	}
+	
+	private String make_customer_type_query(String var)
+	{
+		String query = "SELECT id, disc_perc, pr_qual_disc, pr_qual_free_ship FROM CustomerType";
+		if (var.length() > 0)
+		{
+			query += "WHERE " + var + "?";
 		}
 		return query;
 	}
@@ -226,13 +296,32 @@ public class DBCustomer
 			
 			cust.setCust_type(ct);
 		}
-		catch(SQLException ex)
+		catch(SQLException se)
 		{
 			System.out.println("There was an error while creating customer!");
-			ex.printStackTrace();
+			se.printStackTrace();
 			return null;
 		}
 		return cust;
+	}
+	
+	private CustomerType create_type(ResultSet results)
+	{
+		CustomerType ct = new CustomerType();
+		try
+		{
+			ct.setDisc_perc(results.getFloat("disc_perc"));
+			ct.setPrice_qual_for_disc(results.getFloat("pr_qual_disc"));
+			ct.setPrice_qual_for_free_shipment(results.getFloat("pr_qual_free_ship"));
+			ct.setId(results.getInt("id"));
+		}
+		catch(SQLException se)
+		{
+			System.out.println("There was an error while creating customer type!");
+			se.printStackTrace();
+			return null;
+		}
+		return ct;
 	}
 
 }

@@ -25,6 +25,10 @@ public class GetMax
 	   {
 		 id = results.getInt(1);
 	   }
+	   else
+	   {
+		   id = 1;
+	   }
 	}
 	catch(Exception e)
 	{
