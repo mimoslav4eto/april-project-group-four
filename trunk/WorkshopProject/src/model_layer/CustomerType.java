@@ -2,7 +2,7 @@ package model_layer;
 
 public class CustomerType
 {
-	private int type_id;
+	private int id;
 	private float price_qual_for_disc;
 	private float price_qual_for_free_shipment;
 	private float disc_perc;
@@ -14,14 +14,14 @@ public class CustomerType
 
 
 
-	public int getType_id()
+	public int getId()
 	{
-		return type_id;
+		return id;
 	}
 
-	public void setType_id(int type_id)
+	public void setId(int id)
 	{
-		this.type_id = type_id;
+		this.id = id;
 	}
 
 	public float getPrice_qual_for_disc()
