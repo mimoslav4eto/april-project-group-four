@@ -6,11 +6,34 @@ public class Supplier extends Entity
 {
 	private String CVR;
 	private String description;
+	private String country;
 	private ArrayList<Product> supplies_with;
 
 	public Supplier()
 	{
 		// TODO Auto-generated constructor stub
+	}
+
+	public Supplier(String name, String phone_nr, String email, String address, String zipcode, String city,String cVR, String description, String country)
+	{
+		super(name, phone_nr, email, address, zipcode, city);
+		CVR = cVR;
+		this.description = description;
+		this.country = country;
+	}
+
+
+
+	public String getCountry()
+	{
+		return country;
+	}
+
+
+
+	public void setCountry(String country)
+	{
+		this.country = country;
 	}
 
 

@@ -7,6 +7,15 @@ public class RentLineItem extends LineItem
 	{
 		// TODO Auto-generated constructor stub
 	}
+	
+	
+	public RentLineItem(Product product, int amount)
+	{
+		super(product, amount);
+		daily_price = calculate_daily_price();
+	}
+
+
 	public float getDaily_price()
 	{
 		return daily_price;
@@ -16,9 +25,9 @@ public class RentLineItem extends LineItem
 		this.daily_price = daily_price;
 	}
 	
-	public void calculate_daily_price()
+	public float calculate_daily_price()
 	{
-		daily_price = getProduct().getRent_price() * getAmount();
+		return getProduct().getRent_price() * getAmount();
 	}
 
 }

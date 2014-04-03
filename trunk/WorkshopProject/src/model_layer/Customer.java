@@ -10,6 +10,15 @@ public class Customer extends Entity
 	{
 		// TODO Auto-generated constructor stub
 	}
+	
+
+	public Customer(String name, String phone_nr, String email, String address, String zipcode, String city, CustomerType cust_type, String preferences)
+	{
+		super(name, phone_nr, email, address, zipcode, city);
+		this.cust_type = cust_type;
+		this.preferences = preferences;
+	}
+
 
 	public CustomerType getCust_type()
 	{

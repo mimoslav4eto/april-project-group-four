@@ -1,10 +1,12 @@
 package model_layer;
 
+import java.util.Date;
+
 public class Delivery
 {
 	private int id;
-	private String status;
-	private String date;
+	private boolean in_progress;
+	private Date date;
 	private float cost;
 	private boolean pay_on_delivery;
 
@@ -12,6 +14,20 @@ public class Delivery
 	{
 		// TODO Auto-generated constructor stub
 	}
+	
+	
+
+	public Delivery(boolean in_progress, Date date, boolean pay_on_delivery)
+	{
+		this.in_progress = in_progress;
+		this.date = date;
+		this.pay_on_delivery = pay_on_delivery;
+
+		cost = calculate_cost();
+	
+	}
+
+
 
 	public int getId()
 	{
@@ -23,22 +39,22 @@ public class Delivery
 		this.id = id;
 	}
 
-	public String getStatus()
+	public boolean isIn_progress()
 	{
-		return status;
+		return in_progress;
 	}
 
-	public void setStatus(String status)
+	public void setIn_progress(boolean in_progress)
 	{
-		this.status = status;
+		this.in_progress = in_progress;
 	}
 
-	public String getDate()
+	public Date getDate()
 	{
 		return date;
 	}
 
-	public void setDate(String date)
+	public void setDate(Date date)
 	{
 		this.date = date;
 	}
@@ -62,5 +78,19 @@ public class Delivery
 	{
 		this.pay_on_delivery = pay_on_delivery;
 	}
+	
+	private float calculate_cost()
+	{
+		float c = 45f;
+		if (pay_on_delivery)
+		{
+			c += 25f;
+		}
+		return c;
+	}
+
+	
+
+	
 
 }
