@@ -9,6 +9,13 @@ public class LineItem
 	{
 		// TODO Auto-generated constructor stub
 	}
+	
+	public LineItem(Product product, int amount)
+	{
+		this.product = product;
+		this.amount = amount;
+	}
+
 	public int getId()
 	{
 		return id;

@@ -11,7 +11,14 @@ public class CustomerType
 	{
 		// TODO Auto-generated constructor stub
 	}
+	
 
+	public CustomerType(float price_qual_for_disc, float price_qual_for_free_shipment, float disc_perc)
+	{
+		this.price_qual_for_disc = price_qual_for_disc;
+		this.price_qual_for_free_shipment = price_qual_for_free_shipment;
+		this.disc_perc = disc_perc;
+	}
 
 
 	public int getId()

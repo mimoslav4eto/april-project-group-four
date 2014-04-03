@@ -15,6 +15,16 @@ public class Entity
 		// TODO Auto-generated constructor stub
 	}
 
+	public Entity(String name, String phone_nr, String email, String address, String zipcode, String city)
+	{
+		this.name = name;
+		this.phone_nr = phone_nr;
+		this.email = email;
+		this.address = address;
+		this.zipcode = zipcode;
+		this.city = city;
+	}
+
 	public String getName()
 	{
 		return name;

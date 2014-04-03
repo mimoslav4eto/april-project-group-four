@@ -20,13 +20,19 @@ public class DBCustomer
 	
 	public Customer find_customer(int id)
 	{
-		String var = "username=";
-		return single_where(var, "", id);
+		String var = "c.id=";
+		return single_where_customer(var, "", id);
+	}
+	
+	public CustomerType find_customer_type(int id)
+	{
+		String var = "id=";
+		return single_where_type(var, "", id);
 	}
 	
 	public ArrayList<Customer> get_all_customers()
 	{
-		return multiple_where("", "", -1);
+		return multiple_where_customer("", "", -1);
 	}
 	
 	public ArrayList<CustomerType> get_all_types()
@@ -52,16 +58,15 @@ public class DBCustomer
 			PreparedStatement stmt;
 			if (!zip_code_exists(zipcode))
 			{
-				stmt = make_insert_statement("ZipCity", "zipcode, city, country");
+				stmt = UtilityFunctions.make_insert_statement(con, "ZipCity", "zipcode, city, country");
 				stmt.setString(1, zipcode);
 				stmt.setString(2, city);
 				stmt.setString(3, "Denmark");
 				stmt.executeUpdate();
-				stmt.executeUpdate();
 				stmt.close();
 			}
-			int id = GetMax.get_max_id("SELECT id FROM Entity");
-			stmt = make_insert_statement("Entity", "id, name, phone_nr, email, address, zipcode, type");
+			int id = UtilityFunctions.get_max_id("SELECT max(id) FROM Entity") + 1;
+			stmt = UtilityFunctions.make_insert_statement(con, "Entity", "id, name, phone_nr, email, address, zipcode, type");
 			stmt.setInt(1, id);
 			stmt.setString(2, name);
 			stmt.setString(3, phone_nr);
@@ -73,7 +78,7 @@ public class DBCustomer
 			rc += stmt.executeUpdate();
 			stmt.close();
 			
-			stmt = make_insert_statement("Customer", "id, t_id, preferences");
+			stmt = UtilityFunctions.make_insert_statement(con, "Customer", "id, t_id, preferences");
 			stmt.setInt(1, id);
 			stmt.setInt(2, t_id);
 			stmt.setString(3, preferences);
@@ -91,7 +96,7 @@ public class DBCustomer
 	public int insert_customer_type(CustomerType ct)
 	{
 		int rc = -1;
-		int id = ct.getId();
+		int id = UtilityFunctions.get_max_id("SELECT max(id) FROM CustomerType") + 1;
 		float disc_perc = ct.getDisc_perc();
 		float pr_qual_free_ship = ct.getPrice_qual_for_free_shipment();
 		float pr_qual_disc = ct.getPrice_qual_for_disc();
@@ -99,7 +104,7 @@ public class DBCustomer
 		
 		try
 		{
-			PreparedStatement stmt = make_insert_statement("CustomerType", "id, disc_perc, pr_qual_disc, pr_qual_free_ship");
+			PreparedStatement stmt = UtilityFunctions.make_insert_statement(con, "CustomerType", "id, disc_perc, pr_qual_disc, pr_qual_free_ship");
 			stmt.setInt(1, id);
 			stmt.setFloat(2, disc_perc);
 			stmt.setFloat(3, pr_qual_disc);
@@ -120,9 +125,11 @@ public class DBCustomer
 	{
 		try
 		{
-			Statement st = con.createStatement();
-			st.closeOnCompletion();
-			return st.executeQuery("SELECT * FROM ZipCity WHERE zipcode=" + zipcode).next();
+			PreparedStatement st = con.prepareStatement("SELECT * FROM ZipCity WHERE zipcode=?");
+			st.setString(1, zipcode);
+			boolean exists = st.executeQuery().next();
+			st.close();
+			return exists;
 		}
 		catch(SQLException se)
 		{
@@ -131,40 +138,15 @@ public class DBCustomer
 		}
 	}
 	
-	private PreparedStatement make_insert_statement(String table, String var_names)
-	{
-		String quest_marks = "";
-		int var_num = var_names.split(",").length;
-		for(int i = 0; i < var_num; i++)
-		{
-			if(i==0)
-			{
-				quest_marks += "?";
-			}
-			else
-			{
-				quest_marks += ", ?";
-			}
-		}
-		try
-		{
-			return con.prepareStatement(String.format("INSERT INTO %s(%s) VALUES(%s)", table, var_names, quest_marks));
-		}
-		catch(SQLException se)
-		{
-			System.out.println("Error while creating insert statement: " + se);
-			return null;
-		}
-	}
 	
-	private Customer single_where(String var, String where_clause, int int_where_clause)
+	private Customer single_where_customer(String var, String where_clause, int int_where_clause)
 	{
 		ResultSet results;
 		Customer cust = null;
 		String query = make_complete_query(var);
 		try
 		{
-			PreparedStatement stmt = prepare_statement(query, where_clause, int_where_clause);
+			PreparedStatement stmt = UtilityFunctions.prepare_statement(con, query, where_clause, int_where_clause);
 			stmt.setQueryTimeout(5);
 			results = stmt.executeQuery();
 			if(results.next())
@@ -175,9 +157,32 @@ public class DBCustomer
 		}
 		catch(Exception e)
 		{
-			System.out.println("Query exception: " + e);
+			System.out.println("Customer query exception: " + e);
 		}
 		return cust;
+	}
+	
+	private CustomerType single_where_type(String var, String where_clause, int int_where_clause)
+	{
+		ResultSet results;
+		CustomerType ct = null;
+		String query = make_customer_type_query(var);
+		try
+		{
+			PreparedStatement stmt = UtilityFunctions.prepare_statement(con, query, where_clause, int_where_clause);
+			stmt.setQueryTimeout(5);
+			results = stmt.executeQuery();
+			if(results.next())
+			{
+				ct = create_customer_type(results);
+			}
+			stmt.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println("Type query exception: " + e);
+		}
+		return ct;
 	}
 	
 	private ArrayList<CustomerType> multiple_where_type(String var, String where_clause, int int_where_clause)
@@ -187,12 +192,12 @@ public class DBCustomer
 	    String query = make_customer_type_query(var);
 	    try
 		{
-			PreparedStatement stmt = prepare_statement(query, where_clause, int_where_clause);
+			PreparedStatement stmt = UtilityFunctions.prepare_statement(con, query, where_clause, int_where_clause);
 			stmt.setQueryTimeout(5);
 			results = stmt.executeQuery();
 			while(results.next())
 			{
-				types.add(create_type(results));
+				types.add(create_customer_type(results));
 			}
 			stmt.close();
 		}
@@ -203,14 +208,14 @@ public class DBCustomer
 	 return types;   
 	}
 	
-	private ArrayList<Customer> multiple_where(String var, String where_clause, int int_where_clause)
+	private ArrayList<Customer> multiple_where_customer(String var, String where_clause, int int_where_clause)
 	{
 		ResultSet results;
 	    ArrayList<Customer> customers = new ArrayList<Customer>();	
 	    String query = make_complete_query(var);
 	    try
 		{
-			PreparedStatement stmt = prepare_statement(query, where_clause, int_where_clause);//con.createStatement();
+			PreparedStatement stmt = UtilityFunctions.prepare_statement(con, query, where_clause, int_where_clause);//con.createStatement();
 			stmt.setQueryTimeout(5);
 			results = stmt.executeQuery();
 			while(results.next())
@@ -229,14 +234,15 @@ public class DBCustomer
 	
 	private String make_complete_query(String var)
 	{
-		String query = "SELECT e.id, e.name, e.phone_nr, e.email, c.preferences, "
+		String query = "SELECT e.id AS e_id, e.name, e.address, e.phone_nr, e.email, c.preferences, "
 				+ "ct.pr_qual_disc, ct.disc_perc, ct.pr_qual_free_ship, ct.id, z.zipcode, z.city "
 				+ "FROM Entity AS e, Customer AS c, ZipCity AS z, CustomerType AS ct "
-				+ "WHERE type='Customer', e.id = c.id, z.zipcode = e.zipcode, c.t_id = ct.id";
+				+ "WHERE type='customer' AND e.id = c.id AND z.zipcode = e.zipcode AND c.t_id = ct.id";
 		if (var.length() > 0)
 		{
-			query += ", " + var + "?";
+			query += " AND " + var + "?";
 		}
+		System.out.println("QUERY: " + query);
 		return query;
 	}
 	
@@ -245,34 +251,12 @@ public class DBCustomer
 		String query = "SELECT id, disc_perc, pr_qual_disc, pr_qual_free_ship FROM CustomerType";
 		if (var.length() > 0)
 		{
-			query += "WHERE " + var + "?";
+			query += " WHERE " + var + "?";
 		}
+		System.out.println("Query: " + query);
 		return query;
 	}
 	
-	
-	private PreparedStatement prepare_statement(String query, String where_clause, int int_where_clause)
-	{
-		PreparedStatement ps = null;
-		try
-		{
-			ps = con.prepareStatement(query);
-			if (where_clause.length() > 0)
-			{
-				
-				ps.setString(1, where_clause);
-			}
-			else if (int_where_clause != -1 )
-			{
-				ps.setInt(1, int_where_clause);
-			}
-		}
-		catch (SQLException e)
-		{
-			System.out.println("Error while creating a statement: " + e);
-		}
-		return ps;
-	}
 	
 	private Customer create_customer(ResultSet results)
 	{
@@ -280,20 +264,20 @@ public class DBCustomer
 		CustomerType ct = new CustomerType();
 		try
 		{
-			ct.setDisc_perc(results.getFloat("ct.disc_perc"));
-			ct.setPrice_qual_for_disc(results.getFloat("ct.pr_qual_disc"));
-			ct.setPrice_qual_for_free_shipment(results.getFloat("ct.pr_qual_free_ship"));
-			ct.setId(results.getInt("ct.id"));
+			ct.setDisc_perc(results.getFloat("disc_perc"));
+			ct.setPrice_qual_for_disc(results.getFloat("pr_qual_disc"));
+			ct.setPrice_qual_for_free_shipment(results.getFloat("pr_qual_free_ship"));
+			ct.setId(results.getInt("id"));
 			
-			cust.setName(results.getString("e.name"));
-			cust.setAddress(results.getString("e.address"));
-			cust.setCity(results.getString("z.city"));
-			cust.setEmail(results.getString("e.email"));
-			cust.setId(results.getInt("e.id"));
-			cust.setPhone_nr(results.getString("e.phone_nr"));
-			cust.setPreferences(results.getString("c.preferences"));
-			cust.setZipcode(results.getString("z.zipcode"));
-			
+			cust.setName(results.getString("name"));
+			cust.setAddress(results.getString("address"));
+			cust.setCity(results.getString("city"));
+			cust.setEmail(results.getString("email"));
+			cust.setId(results.getInt("e_id"));
+			cust.setPhone_nr(results.getString("phone_nr"));
+			cust.setPreferences(results.getString("preferences"));
+			cust.setZipcode(results.getString("zipcode"));
+		
 			cust.setCust_type(ct);
 		}
 		catch(SQLException se)
@@ -305,7 +289,7 @@ public class DBCustomer
 		return cust;
 	}
 	
-	private CustomerType create_type(ResultSet results)
+	private CustomerType create_customer_type(ResultSet results)
 	{
 		CustomerType ct = new CustomerType();
 		try
@@ -314,6 +298,7 @@ public class DBCustomer
 			ct.setPrice_qual_for_disc(results.getFloat("pr_qual_disc"));
 			ct.setPrice_qual_for_free_shipment(results.getFloat("pr_qual_free_ship"));
 			ct.setId(results.getInt("id"));
+			System.out.println("ID: " + ct.getId());
 		}
 		catch(SQLException se)
 		{
@@ -323,5 +308,6 @@ public class DBCustomer
 		}
 		return ct;
 	}
+	
 
 }

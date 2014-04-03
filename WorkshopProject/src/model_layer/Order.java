@@ -1,4 +1,5 @@
 package model_layer;
+import java.util.Date;
 import java.util.ArrayList;
 public class Order
 {
@@ -6,7 +7,7 @@ public class Order
 	private Customer customer;
 	private Delivery delivery;
 	private float total_price;
-	private String payment_date;
+	private Date payment_date;
 	private int invoice_nr;
 	private ArrayList<SaleLineItem> items;
 
@@ -14,6 +15,21 @@ public class Order
 	{
 		items = new ArrayList<SaleLineItem>();
 	}
+	
+	
+
+	public Order(Customer customer, Date payment_date,
+			int invoice_nr, ArrayList<SaleLineItem> items)
+	{
+		this.customer = customer;
+		delivery = null;
+		this.payment_date = payment_date;
+		this.invoice_nr = invoice_nr;
+		this.items = items;
+		total_price = calculate_price(customer.getCust_type().getDisc_perc(), customer.getCust_type().getPrice_qual_for_disc());
+	}
+
+
 
 	public int getOrder_id()
 	{
@@ -55,12 +71,12 @@ public class Order
 		this.total_price = total_price;
 	}
 
-	public String getPayment_date()
+	public Date getPayment_date()
 	{
 		return payment_date;
 	}
 
-	public void setPayment_date(String payment_date)
+	public void setPayment_date(Date payment_date)
 	{
 		this.payment_date = payment_date;
 	}
@@ -88,6 +104,20 @@ public class Order
 	public void add_item(SaleLineItem item)
 	{
 		items.add(item);
+	}
+	
+	private float calculate_price(float disc_perc, float price_qual_for_disc)
+	{
+		float price = 0;
+		for (SaleLineItem item : items)
+		{
+			price += item.getTotal_price();
+		}
+		if(price > price_qual_for_disc && disc_perc != -1)
+		{
+			price *= disc_perc;
+		}
+		return price;
 	}
 	
 

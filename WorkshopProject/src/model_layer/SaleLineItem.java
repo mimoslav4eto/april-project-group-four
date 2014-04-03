@@ -5,8 +5,15 @@ public class SaleLineItem extends LineItem
 	private float total_price;
 	public SaleLineItem()
 	{
-		// TODO Auto-generated constructor stub
+
 	}
+	
+	public SaleLineItem(Product product, int amount)
+	{
+		super(product, amount);
+		total_price = calculate_price();
+	}
+	
 	public float getTotal_price()
 	{
 		return total_price;
@@ -16,9 +23,9 @@ public class SaleLineItem extends LineItem
 		this.total_price = total_price;
 	}
 	
-	public void calculate_price()
+	public float calculate_price()
 	{
-		total_price = getProduct().getPrice() * getAmount();
+		return getProduct().getPrice() * getAmount();
 	}
 	
 
