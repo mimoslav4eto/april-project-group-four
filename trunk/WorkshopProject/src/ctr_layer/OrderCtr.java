@@ -71,6 +71,15 @@ public class OrderCtr
 		return db.insert_order(ord) == 1;
 	}
 	
+	public boolean update_delivery_status(int order_id)
+	{
+		Order ord = find_order(order_id, true);
+		Delivery del = ord.getDelivery();
+		del.setIn_progress(false);
+		ord.setDelivery(del);
+		return db.update_order(ord) == 1;
+	}
+	
 	private Order find_order(int id, boolean make_association)
 	{
 		if(ord.getOrder_id() == id && !(ord.getItems().isEmpty() && make_association))

@@ -12,6 +12,7 @@ public class Rent
 	private float rent_price;
 	private Date date;
 	private Date return_date;
+	private boolean complete;
 	private ArrayList<RentLineItem> items;
 
 	public Rent()
@@ -19,15 +20,26 @@ public class Rent
 		items = new ArrayList<RentLineItem>();
 	}
 
-	public Rent(Customer customer, Date date, Date return_date, ArrayList<RentLineItem> items)
+	public Rent(Customer customer, Date date, Date return_date, ArrayList<RentLineItem> items, boolean complete)
 	{
 		super();
 		this.customer = customer;
 		this.date = date;
 		this.return_date = return_date;
 		this.items = items;
+		this.complete = complete;
 		
-		rent_price = calculate_price(date, return_date);
+		calculate_price(date, return_date);
+	}
+
+	public boolean isComplete()
+	{
+		return complete;
+	}
+
+	public void setComplete(boolean complete)
+	{
+		this.complete = complete;
 	}
 
 	public int getRent_id()
@@ -121,15 +133,15 @@ public class Rent
 		items.add(rli);
 	}
 	
-	private float calculate_price(Date begin, Date end)
+	public float calculate_price(Date begin, Date end)
 	{
-		float price = 0;
+		rent_price = 0;
 		long day_difference = count_days(begin, end);
 		for (RentLineItem item : items)
 		{
-			price += item.getDaily_price();
+			rent_price += item.getDaily_price();
 		}
-		return price * day_difference;
+		return rent_price * day_difference;
 	}
 	
 	private long count_days(Date begin, Date end)

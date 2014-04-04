@@ -9,7 +9,6 @@ import model_layer.Delivery;
 import model_layer.Rent;
 import model_layer.Product;
 import model_layer.RentLineItem;
-
 import db_layer.DBRent;
 import db_layer.DBProduct;
 
@@ -17,11 +16,16 @@ public class RentCtr
 {
 	private DBRent db;
 	private DBProduct db_p;
-	private Rent rent;
+	private static Rent rent;
 	public RentCtr()
 	{
 		db = new DBRent();
 		db_p = new DBProduct();
+
+		if(rent == null)
+		{
+			rent = new Rent();
+		}
 	}
 	
 	public boolean add_rent_with_del(int customer_id, boolean pay_on_delivery, Date delivery_date, Date date,
@@ -41,7 +45,7 @@ public class RentCtr
 			items.add(item);
 			
 		}
-		rent = new Rent(cust, date, return_date, items);
+		rent = new Rent(cust, date, return_date, items, false);
 		rent.setDelivery(del);
 		int rc = db.insert_rent(rent);
 		return  rc == 1;
@@ -61,8 +65,38 @@ public class RentCtr
 			items.add(item);
 			
 		}
-		rent = new Rent(cust, date, return_date, items);
+		rent = new Rent(cust, date, return_date, items, false);
 		return db.insert_rent(rent) == 1;
+	}
+	
+	public boolean update_delivery_status(int rent_id)
+	{
+		rent = find_rent(rent_id, true);
+		Delivery del = rent.getDelivery();
+		del.setIn_progress(false);
+		rent.setDelivery(del);
+		return db.update_rent(rent) == 1;
+	}
+	
+	public float finish_rent(int id, boolean recalculate_price)
+	{
+		rent = find_rent(id, false);
+		rent.setComplete(true);
+		float price; 
+		if (recalculate_price)
+		{
+			price = rent.calculate_price(rent.getDate(), new Date());
+		}
+		else
+		{
+			price = rent.getRent_price();
+		}
+		boolean succeed = db.update_rent(rent) == 1;
+		if (succeed)
+		{
+			return price;
+		}
+		return -1;
 	}
 	
 	private Rent find_rent(int id, boolean make_association)
@@ -78,6 +112,7 @@ public class RentCtr
 		}
 		return t_rent;
 	}
+
 	
 	public boolean rent_exists(int id)
 	{
