@@ -8,6 +8,7 @@ import java.sql.Date;
 
 
 
+import java.sql.Types;
 import java.util.ArrayList;
 
 import model_layer.Customer;
@@ -64,7 +65,7 @@ public class DBOrder
 			stmt.setInt(5, cust.getId());
 			
 			if(del != null) { stmt.setInt(6, del.getId()); }
-			else { stmt.setNull(6, java.sql.Types.INTEGER); }
+			else { stmt.setNull(6, Types.INTEGER); }
 			
 			stmt.setQueryTimeout(5);
 			rc += stmt.executeUpdate();
@@ -97,6 +98,49 @@ public class DBOrder
 		catch (SQLException se)
 		{
 			System.out.println("Error while inserting order: " + se);
+		}
+		return rc;
+	}
+	
+	public int update_order(Order ord)
+{
+		
+		int rc = -1;
+		int id = ord.getOrder_id();
+		float total_price = ord.getTotal_price();
+		int invoice_nr = ord.getInvoice_nr();
+		Date payment_date = new Date(ord.getPayment_date().getTime());
+		Customer cust = ord.getCustomer();
+		Delivery del = ord.getDelivery();
+		try
+		{
+			if(del != null)
+			{
+				
+				db_d.update_delivery(del);
+			}
+
+			System.out.println("Order to be updated: " + id);
+			PreparedStatement stmt = UtilityFunctions.make_update_statement(con, "Sale", "price, payment_date, invoice_nr, customer_id, delivery_id", "sale_id");
+			
+			stmt.setFloat(1, total_price);
+			stmt.setDate(2, payment_date);
+			stmt.setInt(3, invoice_nr);
+			stmt.setInt(4, cust.getId());
+						
+			if(del != null) { stmt.setInt(5, del.getId()); }
+			else { stmt.setNull(5, Types.INTEGER); }
+			
+			stmt.setInt(6, id);
+			
+			stmt.setQueryTimeout(5);
+			rc = stmt.executeUpdate();
+			stmt.close();
+
+		}
+		catch (SQLException se)
+		{
+			System.out.println("Error while updating order: " + se);
 		}
 		return rc;
 	}

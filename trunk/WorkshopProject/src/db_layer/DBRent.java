@@ -98,6 +98,47 @@ public class DBRent
 		return rc;
 	}
 	
+	public int update_rent(Rent rent)
+	{
+		
+		int rc = -1;
+		int id = rent.getRent_id();
+		float rent_price = rent.getRent_price();
+		Date date = new Date(rent.getDate().getTime());
+		Date return_date = new Date(rent.getReturn_date().getTime());
+		Customer cust = rent.getCustomer();
+		Delivery del = rent.getDelivery();
+		try
+		{
+			if(del != null)
+			{				
+				db_d.update_delivery(del);
+			}
+			System.out.println("Rent to be updated: " + id);
+			PreparedStatement stmt = UtilityFunctions.make_update_statement(con, "Rent", "rent_price, date, return_date, customer_id, delivery_id", "rent_id");
+			
+			stmt.setFloat(1, rent_price);
+			stmt.setDate(2, date);
+			stmt.setDate(3, return_date);
+			stmt.setInt(4, cust.getId());
+			
+			if(del != null) { stmt.setInt(5, del.getId()); }
+			else { stmt.setNull(6, java.sql.Types.INTEGER); }
+			
+			stmt.setInt(6, id);
+			
+			stmt.setQueryTimeout(5);
+			rc = stmt.executeUpdate();
+			stmt.close();
+			
+		}
+		catch (SQLException se)
+		{
+			System.out.println("Error while inserting rent: " + se);
+		}
+		return rc;
+	}
+	
 	public Rent single_where(String var, String where_clause, int int_where_clause, boolean make_association)
 	{
 		ResultSet results;

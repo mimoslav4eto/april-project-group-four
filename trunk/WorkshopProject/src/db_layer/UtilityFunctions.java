@@ -80,6 +80,38 @@ public class UtilityFunctions
 		}
     }
     
+    public static PreparedStatement make_update_statement(Connection con, String table, String var_names, String where_var)
+    {
+    	String query = String.format("UPDATE %s SET ", table);
+    	String[] vars = var_names.split(",");
+    	for (int i = 0; i < vars.length; i++)
+    	{
+    		if (i==0)
+    		{
+    			query += vars[i] + " = ?";
+    		}
+    		else
+    		{
+    			query += ", " + vars[i] + " = ?";
+    		}
+    	}
+    	if(where_var.length() > 0)
+    	{
+    		query += " WHERE " + where_var + " = ?";
+    	}
+    	try
+    	{
+	    	PreparedStatement ps = con.prepareStatement(query);
+	    	System.out.println(query);
+	    	return ps;
+    	}
+    	catch(SQLException se)
+    	{
+    		System.out.println("Error while creating update statement: " + se);
+    		return null;
+    	}
+    }
+    
     public static PreparedStatement prepare_statement(Connection con, String query, String where_clause, int int_where_clause)
 	{
 		PreparedStatement ps = null;

@@ -64,5 +64,10 @@ public class CustomerCtr
 		int rc = db.insert_customer_type(ct);
 		return rc == 1;
 	}
+	
+	public boolean customer_exists(int customer_id)
+	{
+		return find_customer(customer_id) != null;
+	}
 
 }

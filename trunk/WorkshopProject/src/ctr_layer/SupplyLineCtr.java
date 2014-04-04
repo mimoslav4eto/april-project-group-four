@@ -62,6 +62,13 @@ public class SupplyLineCtr
 		return rc == 1;
 	}
 	
+	public boolean update_product_amount(int product_id, int amount)
+	{
+		prod = find_product(product_id, false);
+		prod.setAmount(amount);
+		return db_p.update_product(prod) == 1;
+	}
+	
 	private Product find_product(int product_id, boolean make_association)
 	{
 		if (prod.getId() == product_id && ((prod.getSupplied_by() != null) || !make_association))

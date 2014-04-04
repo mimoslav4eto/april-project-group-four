@@ -1,5 +1,6 @@
 package db_layer;
 import java.sql.Connection;
+import java.sql.Types;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -51,10 +52,10 @@ public class DBProduct
 			stmt.setString(2, name);
 			stmt.setFloat(3, retail_price);
 			if(price != null) { stmt.setFloat(4, price); }
-			else { stmt.setNull(4, java.sql.Types.FLOAT); }
+			else { stmt.setNull(4, Types.FLOAT); }
 			
 			if(rent_price != null) { stmt.setFloat(5, rent_price); }
-			else { stmt.setNull(5, java.sql.Types.FLOAT); }
+			else { stmt.setNull(5, Types.FLOAT); }
 			
 			stmt.setInt(6, min_amount);
 			stmt.setInt(7, amount);
@@ -76,7 +77,44 @@ public class DBProduct
 		return rc;
 	}
 	
-	public Product single_where(String var, String where_clause, int int_where_clause, boolean make_association)
+	public int update_product(Product prod)
+	{
+		int rc = -1;
+		int id = prod.getId();
+		String name = prod.getName();
+		float retail_price = prod.getRetail_price();
+		Float price = prod.getPrice();
+		Float rent_price = prod.getRent_price();
+		int min_amount = prod.getMin_amount();
+		int amount = prod.getAmount();
+		try
+		{
+			PreparedStatement stmt = UtilityFunctions.make_update_statement(con, "Product", "name, retail_price, price, rent_price, min_amount, amount", "id");
+			stmt.setString(1, name);
+			stmt.setFloat(2, retail_price);
+			
+			if (price != null) { stmt.setFloat(3, price); }
+			else { stmt.setNull(3, Types.FLOAT); }
+			
+			if(rent_price != null) { stmt.setFloat(4, rent_price); }
+			else { stmt.setNull(5, Types.FLOAT); }
+			
+			stmt.setInt(5, min_amount);
+			stmt.setInt(6, amount);
+			stmt.setInt(7, id);
+			
+			stmt.setQueryTimeout(5);
+			rc = stmt.executeUpdate();
+		}
+		catch(SQLException se)
+		{
+			System.out.println("Error while updating product: " + se);
+		}
+		return rc;
+	}
+	
+	
+	private Product single_where(String var, String where_clause, int int_where_clause, boolean make_association)
 	{
 		ResultSet results;
 		Product prod = null;
@@ -104,7 +142,7 @@ public class DBProduct
 		return prod;
 	}
 	
-	public ArrayList<Product> multiple_where(String var, String where_clause, int int_where_clause, boolean make_association)
+	private ArrayList<Product> multiple_where(String var, String where_clause, int int_where_clause, boolean make_association)
 	{
 		ResultSet results;
 		ArrayList<Product> products = new ArrayList<Product>();

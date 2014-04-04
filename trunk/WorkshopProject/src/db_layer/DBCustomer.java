@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 import model_layer.Customer;
@@ -52,7 +51,7 @@ public class DBCustomer
 		String preferences = cust.getPreferences();
 		String address = cust.getAddress();
 		int t_id = cust.getCust_type().getId();
-		System.out.println("User to be inserted: " + name);
+		System.out.println("Customer to be inserted: " + name);
 		try
 		{
 			PreparedStatement stmt;
@@ -88,7 +87,68 @@ public class DBCustomer
 		}
 		catch (SQLException se)
 		{
-			System.out.println("Error while inserting: " + se);
+			System.out.println("Error while inserting customer: " + se);
+		}
+		return rc;
+	}
+	
+	public int update_customer(Customer cust)
+	{
+		int rc = -1;
+		int id = cust.getId();
+		String name = cust.getName();
+		String email = cust.getEmail();
+		String zipcode = cust.getZipcode();
+		String city = cust.getCity();
+		String  phone_nr = cust.getPhone_nr();
+		String preferences = cust.getPreferences();
+		String address = cust.getAddress();
+		int t_id = cust.getCust_type().getId();
+		System.out.println("User to be updated: " + name);
+		try
+		{
+			PreparedStatement stmt;
+			if (!zip_code_exists(zipcode))
+			{
+				stmt = UtilityFunctions.make_insert_statement(con, "ZipCity", "zipcode, city, country");
+				stmt.setString(1, zipcode);
+				stmt.setString(2, city);
+				stmt.setString(3, "Denmark");
+			}
+			else
+			{
+				stmt = UtilityFunctions.make_update_statement(con, "ZipCity", "city", "zipcode = ");
+				stmt.setString(1, city);
+				stmt.setString(2, zipcode);
+			}
+			stmt.executeUpdate();
+			stmt.close();
+			
+			stmt = UtilityFunctions.make_update_statement(con, "Entity", "name, phone_nr, email, address, zipcode, type", "id");
+			
+			stmt.setString(1, name);
+			stmt.setString(2, phone_nr);
+			stmt.setString(3, email);
+			stmt.setString(4, address);
+			stmt.setString(6, zipcode);
+			stmt.setString(6, "customer");
+			stmt.setInt(7, id);
+			stmt.setQueryTimeout(5);
+			rc += stmt.executeUpdate();
+			stmt.close();
+			
+			stmt = UtilityFunctions.make_update_statement(con, "Customer", "t_id, preferences", "id = ");
+			
+			stmt.setInt(1, t_id);
+			stmt.setString(2, preferences);
+			stmt.setInt(3, id);
+			stmt.setQueryTimeout(5);
+			rc += stmt.executeUpdate();
+			stmt.close();
+		}
+		catch(SQLException se)
+		{
+			System.out.println("Error while updating customer: " + se);
 		}
 		return rc;
 	}
@@ -117,7 +177,35 @@ public class DBCustomer
 			System.out.println("Error while inserting customer type: " + se);
 		}
 		return rc;
+	}
+	
+	public int update_customer_type(CustomerType ct)
+	{
+		int rc = -1;
+		int id = ct.getId();
+		float disc_perc = ct.getDisc_perc();
+		float pr_qual_free_ship = ct.getPrice_qual_for_free_shipment();
+		float pr_qual_disc = ct.getPrice_qual_for_disc();
 		
+		System.out.println("Updating customer type: " + id);
+		
+		try
+		{
+			PreparedStatement stmt = UtilityFunctions.make_update_statement(con, "CustomerType", "disc_perc, pr_qual_disc, pr_qual_free_ship", "id");
+			
+			stmt.setFloat(1, disc_perc);
+			stmt.setFloat(2, pr_qual_disc);
+			stmt.setFloat(3, pr_qual_free_ship);
+			stmt.setInt(4, id);
+			
+			rc = stmt.executeUpdate();
+			stmt.close();
+		}
+		catch(SQLException se)
+		{
+			System.out.println("Error while updating customer type: " + se);
+		}
+		return rc;
 		
 	}
 	

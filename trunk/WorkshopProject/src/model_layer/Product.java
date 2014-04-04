@@ -33,9 +33,6 @@ public class Product
 		this.amount = amount;
 	}
 
-
-
-
 	public int getAmount()
 	{
 		return amount;
