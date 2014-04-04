@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import model_layer.Customer;
 import model_layer.CustomerType;
@@ -29,7 +30,7 @@ public class DBCustomer
 		return single_where_type(var, "", id);
 	}
 	
-	public ArrayList<Customer> get_all_customers()
+	public HashMap<Integer, Customer> get_all_customers()
 	{
 		return multiple_where_customer("", "", -1);
 	}
@@ -43,6 +44,7 @@ public class DBCustomer
 	{
 		
 		int rc = -1;
+		int id = -1;
 		String name = cust.getName();
 		String email = cust.getEmail();
 		String zipcode = cust.getZipcode();
@@ -64,7 +66,7 @@ public class DBCustomer
 				stmt.executeUpdate();
 				stmt.close();
 			}
-			int id = UtilityFunctions.get_max_id("SELECT max(id) FROM Entity") + 1;
+			id = UtilityFunctions.get_max_id("SELECT max(id) FROM Entity") + 1;
 			stmt = UtilityFunctions.make_insert_statement(con, "Entity", "id, name, phone_nr, email, address, zipcode, type");
 			stmt.setInt(1, id);
 			stmt.setString(2, name);
@@ -89,7 +91,11 @@ public class DBCustomer
 		{
 			System.out.println("Error while inserting customer: " + se);
 		}
-		return rc;
+		if(rc != 1)
+		{
+			id = -1;
+		}
+		return id;
 	}
 	
 	public int update_customer(Customer cust)
@@ -291,30 +297,32 @@ public class DBCustomer
 		}
 		catch(Exception e)
 		{
-			System.out.println("Query exception: " + e);
+			System.out.println("Customer query exception: " + e);
 		}
 	 return types;   
 	}
 	
-	private ArrayList<Customer> multiple_where_customer(String var, String where_clause, int int_where_clause)
+	private HashMap<Integer, Customer> multiple_where_customer(String var, String where_clause, int int_where_clause)
 	{
 		ResultSet results;
-	    ArrayList<Customer> customers = new ArrayList<Customer>();	
+		HashMap<Integer, Customer> customers = new HashMap<Integer, Customer>();	
 	    String query = make_complete_query(var);
 	    try
 		{
-			PreparedStatement stmt = UtilityFunctions.prepare_statement(con, query, where_clause, int_where_clause);//con.createStatement();
+			PreparedStatement stmt = UtilityFunctions.prepare_statement(con, query, where_clause, int_where_clause);
 			stmt.setQueryTimeout(5);
 			results = stmt.executeQuery();
+			Customer cust;
 			while(results.next())
 			{
-				customers.add(create_customer(results));
+				cust = create_customer(results);
+				customers.put(cust.getId(), cust);
 			}
 			stmt.close();
 		}
 		catch(Exception e)
 		{
-			System.out.println("Query exception: " + e);
+			System.out.println("Customer query exception: " + e);
 		}
 	 return customers;   
 	}

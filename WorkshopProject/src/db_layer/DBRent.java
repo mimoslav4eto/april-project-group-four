@@ -33,6 +33,12 @@ public class DBRent
 		return multiple_where("", "", -1, make_association);
 	}
 	
+	public ArrayList<Rent> get_specific_rents(String checked_var, String where_clause, int int_where_clause, boolean make_association)
+	{
+		String var = checked_var + "=";
+		return multiple_where(var, where_clause, int_where_clause, make_association);
+	}
+	
 	public int insert_rent(Rent rent)
 	{
 		
@@ -43,6 +49,7 @@ public class DBRent
 		Customer cust = rent.getCustomer();
 		Delivery del = rent.getDelivery();
 		ArrayList<RentLineItem> items = rent.getItems();
+		int complete = rent.isComplete() ? 1 : 0;
 		int size = items.size();
 		try
 		{
@@ -53,7 +60,7 @@ public class DBRent
 			}
 			int id = UtilityFunctions.get_max_id("SELECT max(rent_id) FROM Rent") + 1;
 			System.out.println("Rent to be inserted: " + id);
-			PreparedStatement stmt = UtilityFunctions.make_insert_statement(con, "Rent", "rent_id, rent_price, date, return_date, customer_id, delivery_id");
+			PreparedStatement stmt = UtilityFunctions.make_insert_statement(con, "Rent", "rent_id, rent_price, date, return_date, customer_id, delivery_id, complete");
 			stmt.setInt(1, id);
 			stmt.setFloat(2, rent_price);
 			stmt.setDate(3, date);
@@ -62,6 +69,8 @@ public class DBRent
 			
 			if(del != null) { stmt.setInt(6, del.getId()); }
 			else { stmt.setNull(6, java.sql.Types.INTEGER); }
+			
+			stmt.setInt(7, complete);
 			
 			stmt.setQueryTimeout(5);
 			rc += stmt.executeUpdate();
@@ -108,6 +117,7 @@ public class DBRent
 		Date return_date = new Date(rent.getReturn_date().getTime());
 		Customer cust = rent.getCustomer();
 		Delivery del = rent.getDelivery();
+		int complete = rent.isComplete() ? 1 : 0;
 		try
 		{
 			if(del != null)
@@ -115,7 +125,7 @@ public class DBRent
 				db_d.update_delivery(del);
 			}
 			System.out.println("Rent to be updated: " + id);
-			PreparedStatement stmt = UtilityFunctions.make_update_statement(con, "Rent", "rent_price, date, return_date, customer_id, delivery_id", "rent_id");
+			PreparedStatement stmt = UtilityFunctions.make_update_statement(con, "Rent", "rent_price, date, return_date, customer_id, delivery_id, complete", "rent_id");
 			
 			stmt.setFloat(1, rent_price);
 			stmt.setDate(2, date);
@@ -123,9 +133,10 @@ public class DBRent
 			stmt.setInt(4, cust.getId());
 			
 			if(del != null) { stmt.setInt(5, del.getId()); }
-			else { stmt.setNull(6, java.sql.Types.INTEGER); }
+			else { stmt.setNull(5, java.sql.Types.INTEGER); }
 			
-			stmt.setInt(6, id);
+			stmt.setInt(6, complete);
+			stmt.setInt(7, id);
 			
 			stmt.setQueryTimeout(5);
 			rc = stmt.executeUpdate();
@@ -134,7 +145,7 @@ public class DBRent
 		}
 		catch (SQLException se)
 		{
-			System.out.println("Error while inserting rent: " + se);
+			System.out.println("Error while updating rent: " + se);
 		}
 		return rc;
 	}
@@ -205,7 +216,7 @@ public class DBRent
 	
 	private String make_rent_query(String var)
 	{
-		String query = "SELECT rent_id, rent_price, date, return_date, customer_id, delivery_id "
+		String query = "SELECT rent_id, rent_price, date, return_date, customer_id, delivery_id, complete "
 				+ "FROM Rent";
 		if(var.length() > 0)
 		{
@@ -236,6 +247,7 @@ public class DBRent
 			
 			rent.setRent_id(results.getInt("rent_id"));
 			rent.setRent_price(results.getFloat("rent_price"));
+			rent.setComplete(results.getInt("complete") == 1);
 			
 			java.util.Date date = new java.util.Date();
 			date.setTime(results.getDate("date").getTime());

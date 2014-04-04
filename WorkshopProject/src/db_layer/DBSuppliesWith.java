@@ -37,7 +37,52 @@ public class DBSuppliesWith
 		}
 		catch(SQLException se)
 		{
-			System.out.println("Error while inserting supplier-product relation");
+			System.out.println("Error while inserting supplier-product relation: " + se);
+		}
+		return rc;
+	}
+	
+	public int insert_multiple_relations(ArrayList<int[]> ids)
+	{
+		int rc = -1;
+		int size = ids.size();
+		try
+		{
+			PreparedStatement ps = UtilityFunctions.make_multiple_insert_statement(con, "Supplies", "product_id, supplier_id", size);
+			int i = 0;
+			for (int[] data : ids)
+			{
+				ps.setInt(1 + i*2, data[0]);
+				ps.setInt(2 + i*2, data[1]);
+				
+			}
+			ps.setQueryTimeout(5);
+			rc = ps.executeUpdate()/size;
+		}
+		catch(SQLException se)
+		{
+			System.out.println("Error while inserting multiple supplier-product relation: " + se);
+		}
+		return rc;
+	}
+	
+	public int delete_relation(Product prod, Supplier sup)
+	{
+		int rc = -1;
+		int p_id = prod.getId();
+		int s_id = sup.getId();
+		System.out.println("Deleting product-supplier relation: " + p_id + "|" + s_id);
+		try
+		{
+			PreparedStatement ps = con.prepareStatement("DELETE FROM Supplies WHERE p_id = ? AND s_id = ?");
+			ps.setInt(1, p_id);
+			ps.setInt(2, s_id);
+			ps.setQueryTimeout(5);
+			rc = ps.executeUpdate();
+		}
+		catch(SQLException se)
+		{
+			System.out.println("Error while deleting supplier-product relation: " + se);
 		}
 		return rc;
 	}

@@ -11,6 +11,7 @@ public class Product
 	private Float rent_price;
 	private int min_amount;
 	private int amount;
+	private boolean deleted;
 	private ArrayList<Supplier> supplied_by;
 	
 	
@@ -23,7 +24,7 @@ public class Product
 	
 
 
-	public Product(String name, float retail_price, Float price, Float rent_price, int min_amount, int amount)
+	public Product(String name, float retail_price, Float price, Float rent_price, int min_amount, int amount, boolean deleted)
 	{
 		this.name = name;
 		this.retail_price = retail_price;
@@ -31,6 +32,17 @@ public class Product
 		this.rent_price = rent_price;
 		this.min_amount = min_amount;
 		this.amount = amount;
+		this.deleted = deleted;
+	}
+
+	public boolean isDeleted()
+	{
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted)
+	{
+		this.deleted = deleted;
 	}
 
 	public int getAmount()
@@ -116,6 +128,18 @@ public class Product
 	public void add_supplier(Supplier supplier)
 	{
 		supplied_by.add(supplier);
+	}
+	
+	public void remove_supplier(int s_id)
+	{
+		for(Supplier sup : supplied_by)
+		{
+			if (sup.getId()==s_id)
+			{
+				supplied_by.remove(sup);
+				break;
+			}
+		}
 	}
 
 }

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import model_layer.Product;
 import db_layer.DBConnection;
@@ -25,7 +26,7 @@ public class DBProduct
 		return single_where(var, "", id, make_association);
 	}
 	
-	public ArrayList<Product> get_all_products(boolean make_association)
+	public HashMap<Integer, Product> get_all_products(boolean make_association)
 	{
 		return multiple_where("", "", -1, make_association);
 	}
@@ -41,13 +42,14 @@ public class DBProduct
 		float retail_price = prod.getRetail_price();
 		Float rent_price = prod.getRent_price();
 		int amount = prod.getAmount();
-		
+		int deleted = prod.isDeleted() ? 1 : 0;
+		int id = -1;
 
 		System.out.println("Product to be inserted: " + name);
 		try
 		{
-			int id = UtilityFunctions.get_max_id("SELECT max(id) FROM Product") + 1;
-			PreparedStatement stmt = UtilityFunctions.make_insert_statement(con, "Product", "id, name, retail_price, price, rent_price, min_amount, amount");
+			id = UtilityFunctions.get_max_id("SELECT max(id) FROM Product") + 1;
+			PreparedStatement stmt = UtilityFunctions.make_insert_statement(con, "Product", "id, name, retail_price, price, rent_price, min_amount, deleted, amount");
 			stmt.setInt(1, id);
 			stmt.setString(2, name);
 			stmt.setFloat(3, retail_price);
@@ -59,6 +61,9 @@ public class DBProduct
 			
 			stmt.setInt(6, min_amount);
 			stmt.setInt(7, amount);
+			stmt.setInt(8, deleted);
+			
+			
 			stmt.setQueryTimeout(5);
 			rc = stmt.executeUpdate();
 			stmt.close();
@@ -74,7 +79,11 @@ public class DBProduct
 		{
 			System.out.println("Error while inserting product: " + se);
 		}
-		return rc;
+		if(rc != 1)
+		{
+			id = -1;
+		}
+		return id;
 	}
 	
 	public int update_product(Product prod)
@@ -87,9 +96,10 @@ public class DBProduct
 		Float rent_price = prod.getRent_price();
 		int min_amount = prod.getMin_amount();
 		int amount = prod.getAmount();
+		int deleted = prod.isDeleted() ? 1 : 0;
 		try
 		{
-			PreparedStatement stmt = UtilityFunctions.make_update_statement(con, "Product", "name, retail_price, price, rent_price, min_amount, amount", "id");
+			PreparedStatement stmt = UtilityFunctions.make_update_statement(con, "Product", "name, retail_price, price, rent_price, min_amount, amount, deleted", "id");
 			stmt.setString(1, name);
 			stmt.setFloat(2, retail_price);
 			
@@ -101,7 +111,8 @@ public class DBProduct
 			
 			stmt.setInt(5, min_amount);
 			stmt.setInt(6, amount);
-			stmt.setInt(7, id);
+			stmt.setInt(7, deleted);
+			stmt.setInt(8, id);
 			
 			stmt.setQueryTimeout(5);
 			rc = stmt.executeUpdate();
@@ -119,6 +130,7 @@ public class DBProduct
 		ResultSet results;
 		Product prod = null;
 		String query = make_query(var);
+		System.out.println(query);
 		try
 		{
 			PreparedStatement stmt = UtilityFunctions.prepare_statement(con, query, where_clause, int_where_clause);
@@ -142,10 +154,10 @@ public class DBProduct
 		return prod;
 	}
 	
-	private ArrayList<Product> multiple_where(String var, String where_clause, int int_where_clause, boolean make_association)
+	private HashMap<Integer, Product> multiple_where(String var, String where_clause, int int_where_clause, boolean make_association)
 	{
 		ResultSet results;
-		ArrayList<Product> products = new ArrayList<Product>();
+		HashMap<Integer, Product> products = new HashMap<Integer, Product>();
 		Product prod;
 		String query = make_query(var);
 		try
@@ -156,12 +168,13 @@ public class DBProduct
 			while(results.next())
 			{
 				prod = create_product(results);
+				int id = prod.getId();
 				if (make_association)
 				{
 					DBSuppliesWith db_s = new DBSuppliesWith();
 					prod.setSupplied_by(db_s.find_suppliers_of(prod.getId()));
 				}
-				products.add(prod);
+				products.put(id, prod);
 			}
 			stmt.close();
 		}
@@ -174,7 +187,7 @@ public class DBProduct
 	
 	private String make_query(String var)
 	{
-		String query = "SELECT id, name, retail_price, price, rent_price, min_amount, amount FROM Product";
+		String query = "SELECT id, name, retail_price, price, rent_price, min_amount, amount, deleted FROM Product";
 		if (var.length() > 0)
 		{
 			query += " WHERE " + var + "?";
@@ -195,6 +208,7 @@ public class DBProduct
 			prod.setRent_price(results.getFloat("rent_price"));
 			prod.setMin_amount(results.getInt("min_amount"));
 			prod.setAmount(results.getInt("amount"));
+			prod.setDeleted(results.getInt("deleted") == 1);
 			return prod;
 		}
 		catch(SQLException se)
