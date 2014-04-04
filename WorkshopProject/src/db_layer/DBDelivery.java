@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import model_layer.Delivery;
-import model_layer.Product;
+
 
 public class DBDelivery
 {
@@ -46,6 +46,39 @@ public class DBDelivery
 		catch(SQLException se)
 		{
 			System.out.println("Error while inserting delivery: " + se);
+		}
+		return id;
+	}
+	
+	public int update_delivery(Delivery del)
+	{
+		int id = del.getId();
+		float cost = del.getCost();
+		boolean i_p = del.isIn_progress();
+		boolean p_o_d = del.isPay_on_delivery();
+		int in_progress = i_p ? 1: 0;
+		int pay_on_delivery = p_o_d ? 1 : 0;
+		
+		java.util.Date d = del.getDate();
+		Date date = new Date(d.getTime());
+		
+		try
+		{
+			PreparedStatement stmt = UtilityFunctions.make_update_statement(con, "Delivery", "cost, date, in_progress, pay_on_delivery", "id");
+			
+			stmt.setFloat(1, cost);
+			stmt.setDate(2, date);
+			stmt.setInt(3, in_progress);
+			stmt.setInt(4, pay_on_delivery);
+			stmt.setInt(5, id);
+			
+			stmt.setQueryTimeout(5);
+			stmt.executeUpdate();
+			stmt.close();
+		}
+		catch(SQLException se)
+		{
+			System.out.println("Error while updating delivery: " + se);
 		}
 		return id;
 	}

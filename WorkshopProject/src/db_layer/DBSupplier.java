@@ -42,7 +42,7 @@ public class DBSupplier
 		String address = sup.getAddress();
 		String CVR = sup.getCVR();
 		String country = sup.getCountry();
-		System.out.println("User to be inserted: " + name);
+		System.out.println("Supplier to be inserted: " + name);
 		try
 		{
 			PreparedStatement stmt;
@@ -78,11 +78,74 @@ public class DBSupplier
 		}
 		catch (SQLException se)
 		{
-			System.out.println("Error while inserting: " + se);
+			System.out.println("Error while inserting supplier : " + se);
 		}
 		return rc;
 	}
 	
+	public int update_supplier(Supplier sup)
+{
+		int rc = -1;
+		int id = sup.getId();
+		String name = sup.getName();
+		String email = sup.getEmail();
+		String zipcode = sup.getZipcode();
+		String city = sup.getCity();
+		String phone_nr = sup.getPhone_nr();
+		String description = sup.getDescription();
+		String address = sup.getAddress();
+		String CVR = sup.getCVR();
+		String country = sup.getCountry();
+		System.out.println("Supplier to be updated: " + name);
+		try
+		{
+			PreparedStatement stmt;
+			if (!zip_code_exists(zipcode))
+			{
+				stmt = UtilityFunctions.make_insert_statement(con, "ZipCity", "zipcode, city, country");
+				stmt.setString(1, zipcode);
+				stmt.setString(2, city);
+				stmt.setString(3, country);
+				stmt.executeUpdate();
+				stmt.close();
+			}
+			else
+			{
+				stmt = UtilityFunctions.make_update_statement(con, "ZipCity", "city, country",  "zipcode");
+				
+				stmt.setString(1, city);
+				stmt.setString(2, country);
+				stmt.setString(3, zipcode);
+			}
+			stmt = UtilityFunctions.make_update_statement(con, "Entity", "name, phone_nr, email, address, zipcode, type", "id");
+
+			stmt.setString(1, name);
+			stmt.setString(2, phone_nr);
+			stmt.setString(3, email);
+			stmt.setString(4, address);
+			stmt.setString(5, zipcode);
+			stmt.setString(6, "supplier");
+			stmt.setInt(7, id);
+			stmt.setQueryTimeout(5);
+			rc += stmt.executeUpdate();
+			stmt.close();
+			
+			stmt = UtilityFunctions.make_update_statement(con, "Supplier", "CVR, description" , "id");
+			
+			stmt.setString(1, CVR);
+			stmt.setString(2, description);
+			stmt.setInt(3, id);
+			
+			stmt.setQueryTimeout(5);
+			rc += stmt.executeUpdate();
+			stmt.close();
+		}
+		catch (SQLException se)
+		{
+			System.out.println("Error while updating supplier: " + se);
+		}
+		return rc;
+	}
 	
 	private boolean zip_code_exists(String zipcode)
 	{
