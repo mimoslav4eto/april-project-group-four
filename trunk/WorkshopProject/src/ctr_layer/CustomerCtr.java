@@ -86,7 +86,7 @@ public class CustomerCtr
 		cust.setPhone_nr(phone_nr);
 		cust.setPreferences(preferences);
 		cust.setZipcode(zipcode);
-		if(db.insert_customer(cust) == 1)
+		if(db.update_customer(cust) == 1)
 		{
 			all_customers.put(id, cust);
 			return true;
@@ -141,6 +141,10 @@ public class CustomerCtr
 		if (all_customers.containsKey(id))
 		{
 			cust =  all_customers.get(id);
+			if(cust.getName() == null)
+			{
+				cust = null;
+			}
 		}
 
 		return cust;
