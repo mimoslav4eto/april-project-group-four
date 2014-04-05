@@ -102,8 +102,8 @@ public class UselessShitForTesting extends JFrame
 			ids_amounts.add(data);
 		}
 		
-		textField.setText(String.valueOf(oc.add_order_with_del(14, true, date, next_day, 234, ids_amounts)));
-		textField_1.setText(String.valueOf(oc.add_order_without_del(15, date, 23425, ids_amounts)));
+		textField.setText(String.valueOf(oc.add_order_with_del(14, true, date, next_day, 234, ids_amounts, true)));
+		textField_1.setText(String.valueOf(oc.add_order_without_del(15, date, 23425, ids_amounts, false)));
 		textField_2.setText(String.valueOf(oc.order_exists(4)));
 //		textField_1.setText(String.valueOf(cc.add_customer("Bob", "535062444", "some@new.com", "nowhere", "DK9220", "Aalborg", "No real preferences", 1)));
 //		textField_2.setText(cc.find_customer_name(3));
