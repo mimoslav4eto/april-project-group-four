@@ -51,6 +51,10 @@ public class CustomerCtr
 	
 	public Object[][] get_all_customer_types()
 	{
+		if (make_types_array(find_all_customer_types())==null)
+		{
+			return new Object[0][0];
+		}
 		return make_types_array(find_all_customer_types());
 	}
 	
@@ -126,6 +130,10 @@ public class CustomerCtr
 	{
 		return find_customer(customer_id) != null;
 	}
+	public boolean customer_type_exists(int type_id)
+	{
+		return find_customer_type(type_id) != null;
+	}
 
 	private Customer find_customer(int id)
 	{
@@ -188,21 +196,28 @@ public class CustomerCtr
 	private Object[] make_customer_array(Customer cust)
 	{
 		String name = cust.getName();
-		String address = cust.getAddress();
-		String city = cust.getCity();
-		String email = cust.getEmail();
-		String phone_nr = cust.getPhone_nr();
-		int id = cust.getId();
-		String preferences = cust.getPreferences();
-		String zipcode =  cust.getZipcode();
-		ct = cust.getCust_type();
-		float disc_perc = ct.getDisc_perc();
-		int t_id = ct.getId();
-		float price_qual_for_disc = ct.getPrice_qual_for_disc();
-		float price_qual_for_free_shipment = ct.getPrice_qual_for_free_shipment();
-		
-		Object[] data = { id, name, address, zipcode, city, email, phone_nr, preferences, t_id, disc_perc, price_qual_for_disc, price_qual_for_free_shipment };
-		return data;	
+		if (name!=null)
+		{
+			String address = cust.getAddress();
+			String city = cust.getCity();
+			String email = cust.getEmail();
+			String phone_nr = cust.getPhone_nr();
+			int id = cust.getId();
+			String preferences = cust.getPreferences();
+			String zipcode =  cust.getZipcode();
+			ct = cust.getCust_type();
+			float disc_perc = ct.getDisc_perc();
+			int t_id = ct.getId();
+			float price_qual_for_disc = ct.getPrice_qual_for_disc();
+			float price_qual_for_free_shipment = ct.getPrice_qual_for_free_shipment();
+			
+			Object[] data = { id, name, address, zipcode, city, email, phone_nr, preferences, t_id, disc_perc, price_qual_for_disc, price_qual_for_free_shipment };
+			return data;
+		}
+		else
+		{
+			return null;
+		}
 	}
 	
 	private Object[][] make_customers_array(HashMap<Integer, Customer> map)
