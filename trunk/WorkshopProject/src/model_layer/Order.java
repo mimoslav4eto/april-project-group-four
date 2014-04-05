@@ -10,6 +10,7 @@ public class Order
 	private Date payment_date;
 	private int invoice_nr;
 	private ArrayList<SaleLineItem> items;
+	private boolean complete;
 
 	public Order()
 	{
@@ -19,14 +20,30 @@ public class Order
 	
 
 	public Order(Customer customer, Date payment_date,
-			int invoice_nr, ArrayList<SaleLineItem> items)
+			int invoice_nr, ArrayList<SaleLineItem> items, boolean complete)
 	{
 		this.customer = customer;
 		delivery = null;
 		this.payment_date = payment_date;
 		this.invoice_nr = invoice_nr;
 		this.items = items;
+		this.complete = complete;
 		total_price = calculate_price(customer.getCust_type().getDisc_perc(), customer.getCust_type().getPrice_qual_for_disc());
+		
+	}
+
+
+
+	public boolean isComplete()
+	{
+		return complete;
+	}
+
+
+
+	public void setComplete(boolean complete)
+	{
+		this.complete = complete;
 	}
 
 

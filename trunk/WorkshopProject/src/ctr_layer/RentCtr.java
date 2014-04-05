@@ -211,14 +211,15 @@ public class RentCtr
 		String name = prod.getName();
 		float retail_price = prod.getRetail_price();
 		Float rent_price = prod.getRent_price();
-		Object[] data = { product_id, name, retail_price, rent_price, amount };
+		float daily_price = item.getDaily_price();
+		Object[] data = { product_id, name, retail_price, rent_price, amount, daily_price };
 		return data;
 	}
 	
 	private Object[][] make_items_array(Rent rent)
 	{
 		ArrayList<RentLineItem> items = rent.getItems();
-		Object[][] data = new Object[items.size()][5];
+		Object[][] data = new Object[items.size()][6];
 		int i = 0;
 		for(RentLineItem item : items)
 		{

@@ -32,6 +32,12 @@ public class DBOrder
 		return single_where(var, "", id, make_association);
 	}
 	
+	public ArrayList<Order> find_specific_orders(String variable_name, String where_clause, int int_where_clause, boolean make_association)
+	{
+		String var = variable_name + "=";
+		return multiple_where(var, where_clause, int_where_clause, make_association);
+	}
+	
 	public ArrayList<Order> get_all_orders(boolean make_association)
 	{
 		return multiple_where("", "", -1, make_association);
@@ -47,6 +53,7 @@ public class DBOrder
 		Customer cust = ord.getCustomer();
 		Delivery del = ord.getDelivery();
 		ArrayList<SaleLineItem> items = ord.getItems();
+		int complete = ord.isComplete() ? 1:0;
 		int size = items.size();
 		try
 		{
@@ -57,7 +64,7 @@ public class DBOrder
 			}
 			int id = UtilityFunctions.get_max_id("SELECT max(sale_id) FROM Sale") + 1;
 			System.out.println("Order to be inserted: " + id);
-			PreparedStatement stmt = UtilityFunctions.make_insert_statement(con, "Sale", "sale_id, price, payment_date, invoice_nr, customer_id, delivery_id");
+			PreparedStatement stmt = UtilityFunctions.make_insert_statement(con, "Sale", "sale_id, price, payment_date, invoice_nr, customer_id, delivery_id, complete");
 			stmt.setInt(1, id);
 			stmt.setFloat(2, total_price);
 			stmt.setDate(3, payment_date);
@@ -66,6 +73,8 @@ public class DBOrder
 			
 			if(del != null) { stmt.setInt(6, del.getId()); }
 			else { stmt.setNull(6, Types.INTEGER); }
+			
+			stmt.setInt(7, complete);
 			
 			stmt.setQueryTimeout(5);
 			rc += stmt.executeUpdate();
@@ -112,6 +121,7 @@ public class DBOrder
 		Date payment_date = new Date(ord.getPayment_date().getTime());
 		Customer cust = ord.getCustomer();
 		Delivery del = ord.getDelivery();
+		int complete = ord.isComplete() ? 1:0;
 		try
 		{
 			if(del != null)
@@ -121,7 +131,7 @@ public class DBOrder
 			}
 
 			System.out.println("Order to be updated: " + id);
-			PreparedStatement stmt = UtilityFunctions.make_update_statement(con, "Sale", "price, payment_date, invoice_nr, customer_id, delivery_id", "sale_id");
+			PreparedStatement stmt = UtilityFunctions.make_update_statement(con, "Sale", "price, payment_date, invoice_nr, customer_id, delivery_id, complete", "sale_id");
 			
 			stmt.setFloat(1, total_price);
 			stmt.setDate(2, payment_date);
@@ -131,7 +141,8 @@ public class DBOrder
 			if(del != null) { stmt.setInt(5, del.getId()); }
 			else { stmt.setNull(5, Types.INTEGER); }
 			
-			stmt.setInt(6, id);
+			stmt.setInt(6, complete);
+			stmt.setInt(7, id);
 			
 			stmt.setQueryTimeout(5);
 			rc = stmt.executeUpdate();
@@ -211,7 +222,7 @@ public class DBOrder
 	
 	private String make_order_query(String var)
 	{
-		String query = "SELECT sale_id, price, payment_date, invoice_nr, customer_id, delivery_id "
+		String query = "SELECT sale_id, price, payment_date, invoice_nr, customer_id, delivery_id, complete "
 				+ "FROM Sale";
 		if(var.length() > 0)
 		{
@@ -246,6 +257,7 @@ public class DBOrder
 			java.util.Date date = new java.util.Date();
 			date.setTime(results.getDate("payment_date").getTime());
 			ord.setPayment_date(date);
+			ord.setComplete(results.getInt("complete") == 1);
 		}
 		catch(SQLException se)
 		{
