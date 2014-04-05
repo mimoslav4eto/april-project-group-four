@@ -371,10 +371,13 @@ public class Customer extends SuperGUI {
 		});
 		tf_type.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
-				if(!is_opened)
+				if(tf_type.isEnabled())
 				{
-					is_opened=true;
-					make_table_types();
+					if(!is_opened)
+					{
+						is_opened=true;
+						make_table_types();
+					}
 				}
 			}
 		});
@@ -536,6 +539,7 @@ public class Customer extends SuperGUI {
 			}
 			catch (Exception e)
 			{
+				System.out.println("Error while parsing id for editing: " + e);
 			}
 			String name = tf_name.getText();
 			String phone_nr = tf_phone.getText();
@@ -660,15 +664,15 @@ public class Customer extends SuperGUI {
 	}
 	private void fill_fields(Object[] fill,boolean is_edit)
 	{
-		tf_id.setText(""+fill[0]);
-		tf_name.setText(""+fill[1]);
-		tf_phone.setText(""+fill[6]);
-		tf_email.setText(""+fill[5]);
-		tf_address.setText(""+fill[2]);
-		tf_zip.setText(""+fill[3]);
-		tf_city.setText(""+fill[4]);
-		tf_type.setText(""+fill[8]);
-		txt_pref.setText(""+fill[7]);
+		tf_id.setText(String.valueOf(fill[0]));
+		tf_name.setText(String.valueOf(fill[1]));
+		tf_phone.setText(String.valueOf(fill[6]));
+		tf_email.setText(String.valueOf(fill[5]));
+		tf_address.setText(String.valueOf(fill[2]));
+		tf_zip.setText(String.valueOf(fill[3]));
+		tf_city.setText(String.valueOf(fill[4]));
+		tf_type.setText(String.valueOf(fill[8]));
+		txt_pref.setText(String.valueOf(fill[7]));
 		if (!is_edit)
 		{
 			tf_name.setEnabled(false);

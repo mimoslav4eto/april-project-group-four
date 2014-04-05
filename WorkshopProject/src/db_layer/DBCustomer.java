@@ -112,29 +112,32 @@ public class DBCustomer
 		String email = cust.getEmail();
 		String zipcode = cust.getZipcode();
 		String city = cust.getCity();
-		String  phone_nr = cust.getPhone_nr();
+		String phone_nr = cust.getPhone_nr();
 		String preferences = cust.getPreferences();
 		String address = cust.getAddress();
 		int t_id = cust.getCust_type().getId();
-		System.out.println("User to be updated: " + name);
+		System.out.println("Customer to be updated: " + name);
 		try
 		{
 			PreparedStatement stmt;
-			if (!zip_code_exists(zipcode))
+			if(name != null)
 			{
-				stmt = UtilityFunctions.make_insert_statement(con, "ZipCity", "zipcode, city, country");
-				stmt.setString(1, zipcode);
-				stmt.setString(2, city);
-				stmt.setString(3, "Denmark");
+				if (!zip_code_exists(zipcode))
+				{
+					stmt = UtilityFunctions.make_insert_statement(con, "ZipCity", "zipcode, city, country");
+					stmt.setString(1, zipcode);
+					stmt.setString(2, city);
+					stmt.setString(3, "Denmark");
+				}
+				else
+				{
+					stmt = UtilityFunctions.make_update_statement(con, "ZipCity", "city", "zipcode");
+					stmt.setString(1, city);
+					stmt.setString(2, zipcode);
+				}
+				stmt.executeUpdate();
+				stmt.close();
 			}
-			else
-			{
-				stmt = UtilityFunctions.make_update_statement(con, "ZipCity", "city", "zipcode = ");
-				stmt.setString(1, city);
-				stmt.setString(2, zipcode);
-			}
-			stmt.executeUpdate();
-			stmt.close();
 			
 			stmt = UtilityFunctions.make_update_statement(con, "Entity", "name, phone_nr, email, address, zipcode, type", "id");
 			
@@ -142,14 +145,14 @@ public class DBCustomer
 			stmt.setString(2, phone_nr);
 			stmt.setString(3, email);
 			stmt.setString(4, address);
-			stmt.setString(6, zipcode);
+			stmt.setString(5, zipcode);
 			stmt.setString(6, "customer");
 			stmt.setInt(7, id);
 			stmt.setQueryTimeout(5);
 			rc += stmt.executeUpdate();
 			stmt.close();
 			
-			stmt = UtilityFunctions.make_update_statement(con, "Customer", "t_id, preferences", "id = ");
+			stmt = UtilityFunctions.make_update_statement(con, "Customer", "t_id, preferences", "id");
 			
 			stmt.setInt(1, t_id);
 			stmt.setString(2, preferences);
