@@ -27,6 +27,12 @@ public class DBSupplier
 	{
 		return multiple_where("", "", -1, make_association);
 	}
+	
+	public ArrayList<Supplier> get_some_suppliers(String variable_name, String where_clause, int int_where_clause, boolean make_association)
+	{
+		String var = "e." + variable_name + "=";
+		return multiple_where(var, where_clause, int_where_clause, make_association);
+	}
 
 	
 	public int insert_supplier(Supplier sup)

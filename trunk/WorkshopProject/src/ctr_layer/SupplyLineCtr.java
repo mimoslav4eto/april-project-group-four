@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import model_layer.Product;
@@ -38,6 +39,47 @@ public class SupplyLineCtr
 			sup= new Supplier();
 		}
 		
+	}
+	
+	public Object[] get_product_by_id(int id)
+	{
+		return make_product_array(find_product(id, false));
+	}
+	
+	public Object[][] get_products_by_name(String name)
+	{
+		return make_products_array(find_products_by_name(name, false));
+	}
+	
+	public Object[] get_supplier_by_id(int id)
+	{
+		return make_supplier_array(find_supplier(id, false));
+	}
+	
+	public Object[][] get_suppliers_by_name(String name)
+	{
+		return make_suppliers_array(find_suppliers_by_name(name, false));
+	}
+	
+	public Object[][] get_suppliers_of(int product_id)
+	{
+		Product prod = find_product(product_id, true);
+		if (prod != null)
+		{
+			return make_suppliers_array(prod.getSupplied_by());
+		}
+		return null;
+		
+	}
+	
+	public Object[][] get_products_supplied_by(int supplier_id)
+	{
+		Supplier t_sup = find_supplier(supplier_id, true);
+		if(t_sup!= null)
+		{
+			return make_products_array(t_sup.getSupplies_with());
+		}
+		return null;
 	}
 	
 	public boolean add_product(String name, float retail_price, Float price, Float rent_price, int min_amount,
@@ -205,6 +247,16 @@ public class SupplyLineCtr
 		return prod;
 	}
 	
+	private HashMap<Integer, Product> find_products_by_name(String name, boolean make_association)
+	{
+		return db_p.get_some_products("name", name, -1, make_association);
+	}
+	
+	private ArrayList<Supplier> find_suppliers_by_name(String name, boolean make_association)
+	{
+		return db_s.get_some_suppliers("name", name, -1, make_association);
+	}
+	
 	private Supplier find_supplier(int supplier_id, boolean make_association)
 	{
 		if(sup.getId() == supplier_id && ((sup.getSupplies_with() != null) || !make_association))
@@ -243,6 +295,71 @@ public class SupplyLineCtr
 	public boolean supplier_exists(int supplier_id)
 	{
 		return find_supplier(supplier_id, false) != null;
+	}
+	
+	private Object[] make_product_array(Product prod)
+	{
+		int id = prod.getId();
+		String name = prod.getName();
+		float retail_price= prod.getRetail_price();
+		Float price = prod.getPrice();
+		Float rent_price = prod.getRent_price();
+		int amount = prod.getAmount();
+		int min_amount = prod.getMin_amount();
+		
+		Object[] data = { id, name, retail_price, price, rent_price, amount, min_amount };
+		return data;
+	}
+	
+	private Object[][] make_products_array(HashMap<Integer, Product> map)
+	{
+		Collection<Product> products = map.values();
+		Object[][] data = new Object[products.size()][7];
+		int i = 0;
+		for(Product product : products)
+		{
+			data[i] = make_product_array(product);
+		}
+		return data;
+	}
+	
+	private Object[][] make_products_array(ArrayList<Product> products)
+	{
+		Object data[][] = new Object[products.size()][7];
+		int i = 0;
+		for(Product product : products)
+		{
+			data[i] = make_product_array(product);
+		}
+		return data;
+	}
+	
+	private Object[] make_supplier_array(Supplier s)
+	{
+		int id = s.getId();
+		String name = s.getName();
+		String address = s.getAddress();
+		String city =s.getCity();
+		String country =s.getCountry();
+		String cvr =s.getCVR();
+		String description =s.getDescription();
+		String email =s.getEmail();
+		String phone_nr =s.getPhone_nr();
+		String zipcode =s.getZipcode();
+		Object[] data = { id, name, address, zipcode, city, country, email, phone_nr, cvr, description };
+		return data;
+
+	}
+	
+	private Object[][] make_suppliers_array(ArrayList<Supplier> suppliers)
+	{
+		Object[][] data = new Object[suppliers.size()][10];
+		int i = 0;
+		for(Supplier supplier : suppliers)
+		{
+			data[i] = make_supplier_array(supplier);
+		}
+		return data;
 	}
 	
 

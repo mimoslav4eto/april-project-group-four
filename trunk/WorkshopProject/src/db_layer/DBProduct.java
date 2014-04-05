@@ -31,6 +31,12 @@ public class DBProduct
 		return multiple_where("", "", -1, make_association);
 	}
 	
+	public HashMap<Integer, Product> get_some_products(String variable_name, String where_clause, int int_where_clause, boolean make_association)
+	{
+		String var = variable_name + "=";
+		return multiple_where(var, where_clause, int_where_clause, make_association);
+	}
+	
 	
 	public int insert_product(Product prod)
 	{
