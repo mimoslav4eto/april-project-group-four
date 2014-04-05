@@ -42,7 +42,6 @@ public class Product extends SuperGUI {
 		//filling=products.get_all_products();
 		filling=new Object[0][0];
 		fill_table(filling,column_names);
-		contentPane.add();
 		
 	}
 	
