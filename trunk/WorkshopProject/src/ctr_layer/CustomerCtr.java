@@ -39,6 +39,11 @@ public class CustomerCtr
 		return make_customers_array(find_all_customers());
 	}
 	
+	public Object[][] get_non_deleted_customers()
+	{
+		return make_customers_array(find_non_deleted_customers());
+	}
+	
 	public Object[] get_customer_type(int id)
 	{
 		return make_type_array(find_customer_type(id));
@@ -142,6 +147,19 @@ public class CustomerCtr
 		return all_customers;
 	}
 	
+	private ArrayList<Customer> find_non_deleted_customers()
+	{
+		ArrayList<Customer> non_deleted = new ArrayList<Customer>();
+		for(Customer customer : all_customers.values())
+		{
+			if (customer.getName() != null)
+			{
+				non_deleted.add(customer);
+			}
+		}
+		return non_deleted;
+	}
+	
 	private HashMap<Integer, Customer> find_customers_by_name(String name)
 	{
 		return db.get_some_customers("name", name, -1);
@@ -189,7 +207,18 @@ public class CustomerCtr
 	
 	private Object[][] make_customers_array(HashMap<Integer, Customer> map)
 	{
-		Collection<Customer> customers = map.values();
+		Object[][] data = new Object[map.size()][12];
+		int i =0;
+		for(Customer cust : map.values())
+		{
+			data[i] = make_customer_array(cust);
+			i++;
+		}
+		return data;
+	}
+	
+	private Object[][] make_customers_array(ArrayList<Customer> customers)
+	{
 		Object[][] data = new Object[customers.size()][12];
 		int i =0;
 		for(Customer cust : customers)
