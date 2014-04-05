@@ -10,14 +10,8 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-
-import java.awt.ScrollPane;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-
-import java.awt.Component;
-
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
@@ -32,16 +26,7 @@ import java.awt.Font;
 import java.awt.Dimension;
 
 import javax.swing.ListSelectionModel;
-import java.awt.GridLayout;
-import javax.swing.BoxLayout;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.SpringLayout;
 import java.awt.FlowLayout;
-import javax.swing.border.TitledBorder;
 
 public class SuperGUI extends JFrame {
 
@@ -165,7 +150,7 @@ public class SuperGUI extends JFrame {
 		{
 			public void mouseClicked(MouseEvent arg2)
 			{
-				create_edit();
+				edit();
 			}
 		});
 		panel_2.add(btn_edit);

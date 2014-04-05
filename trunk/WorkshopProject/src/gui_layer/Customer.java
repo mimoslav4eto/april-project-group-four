@@ -122,7 +122,7 @@ public class Customer extends SuperGUI {
 		dim= Toolkit.getDefaultToolkit().getScreenSize();
 		setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 		make_manager();
-		Object[][] temp=customers.get_all_customers();
+		Object[][] temp=customers.get_non_deleted_customers();
 		refill_table(temp);
 		
 	}
@@ -179,10 +179,11 @@ public class Customer extends SuperGUI {
 		{
 			public void focusGained(FocusEvent arg0)
 			{
-				if ((tf_name.getText().equals("Name"))&&(tf_name.getForeground()!=Color.black))
+				if (((tf_name.getText().equals("Name"))&&(tf_name.getForeground()!=Color.black))||(tf_name.getText().equals("Not Valid")))
 				{
 					tf_name.setText("");
 					tf_name.setForeground(Color.black);
+					tf_name.setBackground(Color.white);
 				}
 			}
 			public void focusLost(FocusEvent arg1)
@@ -210,10 +211,11 @@ public class Customer extends SuperGUI {
 		tf_phone.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent arg0)
 			{
-				if ((tf_phone.getText().equals("Phone Number"))&&(tf_phone.getForeground()!=Color.black))
+				if (((tf_phone.getText().equals("Phone Number"))&&(tf_phone.getForeground()!=Color.black))||(tf_phone.getText().equals("Not Valid")))
 				{
 					tf_phone.setText("");
 					tf_phone.setForeground(Color.black);
+					tf_phone.setBackground(Color.white);
 				}
 			}
 			public void focusLost(FocusEvent arg1)
@@ -235,10 +237,11 @@ public class Customer extends SuperGUI {
 		tf_email.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent arg0)
 			{
-				if ((tf_email.getText().equals("E-mail"))&&(tf_email.getForeground()!=Color.black))
+				if ((tf_email.getText().equals("E-mail"))||(tf_email.getText().equals("Not valid")))
 				{
 					tf_email.setText("");
 					tf_email.setForeground(Color.black);
+					tf_email.setBackground(Color.white);
 				}
 			}
 			public void focusLost(FocusEvent arg1)
@@ -266,10 +269,11 @@ public class Customer extends SuperGUI {
 		tf_address.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent arg0)
 			{
-				if ((tf_address.getText().equals("Address"))&&(tf_address.getForeground()!=Color.black))
+				if ((tf_address.getText().equals("Address"))||(tf_address.getText().equals("Not valid")))
 				{
 					tf_address.setText("");
 					tf_address.setForeground(Color.black);
+					tf_address.setBackground(Color.white);
 				}
 			}
 			public void focusLost(FocusEvent arg1)
@@ -291,10 +295,11 @@ public class Customer extends SuperGUI {
 		tf_zip.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent arg0)
 			{
-				if ((tf_zip.getText().equals("Zip Code"))&&(tf_zip.getForeground()!=Color.black))
+				if ((tf_zip.getText().equals("Zip Code"))||(tf_zip.getText().equals("Not valid")))
 				{
 					tf_zip.setText("");
 					tf_zip.setForeground(Color.black);
+					tf_zip.setBackground(Color.white);
 				}
 			}
 			public void focusLost(FocusEvent arg1)
@@ -322,10 +327,11 @@ public class Customer extends SuperGUI {
 		tf_city.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent arg0)
 			{
-				if ((tf_city.getText().equals("City"))&&(tf_city.getForeground()!=Color.black))
+				if ((tf_city.getText().equals("City"))||(tf_city.getText().equals("Not valid")))
 				{
 					tf_city.setText("");
 					tf_city.setForeground(Color.black);
+					tf_city.setBackground(Color.white);
 				}
 			}
 			public void focusLost(FocusEvent arg1)
@@ -346,10 +352,11 @@ public class Customer extends SuperGUI {
 		tf_type.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent arg0)
 			{
-				if ((tf_type.getText().equals("Customer Type"))&&(tf_type.getForeground()!=Color.black))
+				if ((tf_type.getText().equals("Customer Type"))||(tf_type.getText().equals("Not valid")))
 				{
 					tf_type.setText("");
 					tf_type.setForeground(Color.black);
+					tf_type.setBackground(Color.white);
 					
 				}
 			}
@@ -367,8 +374,7 @@ public class Customer extends SuperGUI {
 				if(!is_opened)
 				{
 					is_opened=true;
-					Table p=new Table();
-					p.setVisible(true);
+					make_table_types();
 				}
 			}
 		});
@@ -383,10 +389,11 @@ public class Customer extends SuperGUI {
 		txt_pref.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent arg0)
 			{
-				if ((txt_pref.getText().equals("Preferences"))&&(txt_pref.getForeground()!=Color.black))
+				if ((txt_pref.getText().equals("Preferences"))||(txt_pref.getText().equals("Not valid")))
 				{
 					txt_pref.setText("");
 					txt_pref.setForeground(Color.black);
+					txt_pref.setBackground(Color.white);
 				}
 			}
 			public void focusLost(FocusEvent arg1)
@@ -424,46 +431,63 @@ public class Customer extends SuperGUI {
 		{
 			public void mouseClicked(MouseEvent arg0)
 			{
-				create_edit();
+				if (tf_name.isEnabled())
+				{
+					create_edit();
+				}
 			}
 		});
+	}
+	private void make_table_types()
+	{
+		Table p=new Table(this);
+		p.setVisible(true);
 	}
 	private void clear_fields()
 	{
 		tf_id.setText("ID");
 		tf_id.setForeground(Color.LIGHT_GRAY);
+		tf_id.setBackground(Color.white);
 		
 		tf_name.setText("Name");
 		tf_name.setForeground(Color.LIGHT_GRAY);
 		tf_name.setEnabled(true);
+		tf_name.setBackground(Color.white);
 		
 		tf_phone.setText("Phone Number");
 		tf_phone.setForeground(Color.LIGHT_GRAY);
 		tf_phone.setEnabled(true);
+		tf_phone.setBackground(Color.white);
 		
 		tf_email.setText("E-mail");
 		tf_email.setForeground(Color.LIGHT_GRAY);
 		tf_email.setEnabled(true);
+		tf_email.setBackground(Color.white);
 		
 		tf_zip.setText("Zip Code");
 		tf_zip.setForeground(Color.LIGHT_GRAY);
 		tf_zip.setEnabled(true);
+		tf_zip.setBackground(Color.white);
 		
 		tf_city.setText("City");
 		tf_city.setForeground(Color.LIGHT_GRAY);
 		tf_city.setEnabled(true);
+		tf_city.setBackground(Color.white);
 		
 		tf_type.setText("Customer Type");
 		tf_type.setForeground(Color.LIGHT_GRAY);
 		tf_type.setEnabled(true);
+		tf_type.setBackground(Color.white);
 		
 		tf_address.setText("Address");
 		tf_address.setForeground(Color.LIGHT_GRAY);
 		tf_address.setEnabled(true);
+		tf_address.setBackground(Color.white);
 		
 		txt_pref.setText("Preferences");
 		txt_pref.setForeground(Color.LIGHT_GRAY);
 		txt_pref.setEnabled(true);
+		txt_pref.setBackground(Color.white);
 	}
 	protected void search()
 	{
@@ -491,7 +515,7 @@ public class Customer extends SuperGUI {
 	protected void clear()
 	{
 		clear_fields();
-		filling=customers.get_all_customers();
+		filling=customers.get_non_deleted_customers();
 		refill_table(filling);
 		field_search.setText("Name/ID");
 		field_search.setForeground(Color.LIGHT_GRAY);
@@ -574,7 +598,7 @@ public class Customer extends SuperGUI {
 			tf_city.setText("Not valid");
 			is_ready=false;
 		}
-		if ((tf_type.getText().equals("Customer Type"))||(tf_address.getText().equals(""))||(!is_number(tf_type.getText())))
+		if ((tf_type.getText().equals("Customer Type"))||(tf_address.getText().equals(""))||(!is_number(tf_type.getText()))||(!customers.customer_type_exists(Integer.parseInt(tf_type.getText()))))
 		{
 			tf_type.setBackground(Color.red);
 			tf_type.setText("Not valid");
@@ -628,7 +652,7 @@ public class Customer extends SuperGUI {
 						"Delete customer", JOptionPane.YES_NO_OPTION))
 				{
 					customers.delete_customer((int)table.getModel().getValueAt(row_index, 0));
-					filling=customers.get_all_customers();
+					filling=customers.get_non_deleted_customers();
 					fill_table(filling,column_names);
 				}
 			}
@@ -677,55 +701,68 @@ public class Customer extends SuperGUI {
 			txt_pref.setForeground(Color.black);
 		}
 	}
-}
 
 class Table extends SuperGUI {
 	
 	private Object[][] filling;
 	private Object[] column_names={"id","Discount Price", "Discount %", "Free Shipping"};
     private Point initialClick;
-    private CustomerCtr customers;
+	private Customer instance;
 	
-	public Table() {
-		contentPane.setBorder(new TitledBorder(null, "Customer Type", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-	    getContentPane().addMouseListener(new MouseAdapter() {
-	        public void mousePressed(MouseEvent e) {
-	            initialClick = e.getPoint();
-	            getComponentAt(initialClick);
-	        }
-		});
-		getContentPane().addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseDragged(MouseEvent e) {
-	            int thisX = getLocation().x;
-	            int thisY = getLocation().y;
-
-	            int xMoved = (thisX + e.getX()) - (thisX + initialClick.x);
-	            int yMoved = (thisY + e.getY()) - (thisY + initialClick.y);
-
-	            int X = thisX + xMoved;
-	            int Y = thisY + yMoved;
-	            setLocation(X, Y);
-			}
-		});
+	public Table(Customer instance) {
+		this.instance=instance;
+		setTitle("Choose Customer Type");
 		setSize(450, 300);
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.SOUTH);
-		this.setUndecorated(true);
 		filling= customers.get_all_customer_types();
 		fill_table(filling, column_names);
+		table.addMouseListener(new MouseAdapter()
+		{
+			public void mouseClicked(MouseEvent e)
+			{
+				choose();
+			}
+		});
+		
+		this.addWindowListener(new java.awt.event.WindowAdapter() {
+		    @Override
+		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		    	is_opened=false;
+		    }
+		});
 	}
 	protected void search()
 	{
-		
+		Object[][] temp=null;
+		String info = field_search.getText();
+		if (is_number(info))
+		{
+			if (customers.customer_type_exists(Integer.parseInt(info)))
+			{
+			temp = new Object[1][4];
+			temp[0] = customers.get_customer_type(Integer.parseInt(info));
+			}
+		}
+		fill_table(temp,column_names);
 	}
 	protected void clear()
 	{
-		frame.make_manager();
+		filling=customers.get_all_customer_types();
+		fill_table(filling, column_names);
+		field_search.setText("Name/ID");
+		field_search.setForeground(Color.LIGHT_GRAY);
 	}
 	
-	protected void view()
+	protected void choose()
 	{
-		
+		int row_index = table.getSelectedRow();
+		if (row_index != -1)
+		{
+			int t_id=(int)table.getModel().getValueAt(row_index, 0);
+			tf_type.setText(""+t_id);
 	}
+	}
+}
+
 }
