@@ -28,7 +28,7 @@ public class Rent
 		this.return_date = return_date;
 		this.items = items;
 		this.complete = complete;
-		
+		delivery = null;
 		calculate_price(date, return_date);
 	}
 
@@ -80,6 +80,7 @@ public class Rent
 	public void setDelivery(Delivery delivery)
 	{
 		this.delivery = delivery;
+		calculate_price(date, return_date);
 	}
 
 
@@ -135,6 +136,10 @@ public class Rent
 	
 	public float calculate_price(Date begin, Date end)
 	{
+		if(end.getTime()!= return_date.getTime())
+		{
+			return_date = end;
+		}
 		rent_price = 0;
 		long day_difference = count_days(begin, end);
 		for (RentLineItem item : items)

@@ -9,7 +9,7 @@ import javax.swing.UIManager;
 import ctr_layer.SupplyLineCtr;
 
 public class Product extends SuperGUI {
-	private Object[] column_names={"id", "Name", "Price", "Rent Price", "Amount"};
+	private String[] column_names={"id", "Name", "Price", "Rent Price", "Amount"};
 	private Object[][] filling;
 	private SupplyLineCtr products;
 	

@@ -28,7 +28,7 @@ public class Order
 		this.invoice_nr = invoice_nr;
 		this.items = items;
 		this.complete = complete;
-		total_price = calculate_price(customer.getCust_type().getDisc_perc(), customer.getCust_type().getPrice_qual_for_disc());
+		calculate_price(customer.getCust_type().getDisc_perc(), customer.getCust_type().getPrice_qual_for_disc());
 		
 	}
 
@@ -76,6 +76,7 @@ public class Order
 	public void setDelivery(Delivery delivery)
 	{
 		this.delivery = delivery;
+		calculate_price(customer.getCust_type().getDisc_perc(), customer.getCust_type().getPrice_qual_for_disc());
 	}
 
 	public float getTotal_price()
@@ -123,18 +124,23 @@ public class Order
 		items.add(item);
 	}
 	
-	private float calculate_price(float disc_perc, float price_qual_for_disc)
+	private void calculate_price(float disc_perc, float price_qual_for_disc)
 	{
-		float price = 0;
+		total_price = 0;
 		for (SaleLineItem item : items)
 		{
-			price += item.getTotal_price();
+			total_price += item.getTotal_price();
 		}
-		if(price > price_qual_for_disc && disc_perc != -1)
+		if(total_price > price_qual_for_disc && disc_perc != -1)
 		{
-			price *= disc_perc;
+			total_price *= disc_perc;
 		}
-		return price;
+		
+		if(delivery != null)
+		{
+			total_price += delivery.getCost();
+		}
+		
 	}
 	
 
