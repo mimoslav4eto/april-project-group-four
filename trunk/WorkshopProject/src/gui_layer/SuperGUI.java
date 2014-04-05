@@ -38,7 +38,7 @@ public class SuperGUI extends JFrame {
 	private JPanel panel_1; 
 	private JScrollPane scrollPane;
 	protected JTable table;
-	private Object[] column_names = {};
+	private String[] column_names = {};
 	private Object[][] filling;
 
 	/**
@@ -214,11 +214,11 @@ public class SuperGUI extends JFrame {
 		
 	}
 	
-	protected void fill_table(Object[][] fill, Object[] columns)
+	protected void fill_table(Object[][] fill, String[] columns)
 	{
 		filling = fill;
 		column_names=columns;
-		table.setModel(new DefaultTableModel(filling, column_names));
+		table.setModel(new MyTableModel(filling, column_names));
 	}
 	
 	protected void search()

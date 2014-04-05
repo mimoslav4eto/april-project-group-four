@@ -38,7 +38,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
 public class Customer extends SuperGUI {
-	private Object[] column_names={"id", "Name", "Phone", "Zip code"};
+	private String[] column_names={"id", "Name", "Phone", "Zip code"};
 	private Object[][] filling;
 	protected CustomerCtr customers;
 	private JPanel panel;
@@ -81,8 +81,8 @@ public class Customer extends SuperGUI {
 	/**
 	 * Create the frame.
 	 */
-	public Customer() {
-		
+	public Customer() 
+	{
 		table.addMouseListener(new MouseAdapter()
 		{
 			public void mouseClicked(MouseEvent e)
@@ -709,7 +709,7 @@ public class Customer extends SuperGUI {
 class Table extends SuperGUI {
 	
 	private Object[][] filling;
-	private Object[] column_names={"id","Discount Price", "Discount %", "Free Shipping"};
+	private String[] column_names={"id","Discount Price", "Discount %", "Free Shipping"};
     private Point initialClick;
 	private Customer instance;
 	
