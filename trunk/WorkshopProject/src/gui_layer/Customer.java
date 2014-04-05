@@ -3,8 +3,11 @@ import ctr_layer.CustomerCtr;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.Toolkit;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,11 +22,17 @@ import javax.swing.border.TitledBorder;
 import java.awt.FlowLayout;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 import javax.swing.DropMode;
 import javax.swing.SwingConstants;
 import javax.swing.JTextArea;
 import javax.swing.BoxLayout;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -31,11 +40,8 @@ import java.awt.Insets;
 public class Customer extends SuperGUI {
 	private Object[] column_names={"id", "Name", "Phone", "Zip code"};
 	private Object[][] filling;
-	private CustomerCtr customers;
+	protected CustomerCtr customers;
 	private JPanel panel;
-	private JPanel panel_5;
-	private JButton btnNewButton;
-	private JButton btnNewButton_1;
 	private JTextField tf_zip;
 	private JTextField tf_city;
 	private JTextField tf_id;
@@ -48,12 +54,17 @@ public class Customer extends SuperGUI {
 	private JPanel panel_2;
 	private JPanel panel_3;
 	private JPanel panel_4;
-	private JTextArea textArea;
+	private JTextArea txt_pref;
+	private boolean is_opened;
+	private Dimension dim;
+	private JPanel panel_5;
+	private JButton btn_ok;
 	
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -71,15 +82,68 @@ public class Customer extends SuperGUI {
 	 * Create the frame.
 	 */
 	public Customer() {
-		setTitle("Customers");
-		setBounds(100, 100, 730, 513);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		customers=new CustomerCtr();
 		
-		//filling=customers.get_all_customers();
-		filling=new Object[0][0];
-		fill_table(filling,column_names);
+		table.addMouseListener(new MouseAdapter()
+		{
+			public void mouseClicked(MouseEvent e)
+			{
+					view();
+			}
+		});
+		table.addMouseListener(new MouseAdapter()
+		{
+			public void mouseClicked(MouseEvent e)
+			{
+				if (e.getClickCount() == 2)
+				{
+					edit();
+				}
+				else if (e.getClickCount() == 1)
+				{
+					view();
+				}
+			}
+		});
+		table.addKeyListener(new KeyAdapter()
+		{
+			public void keyTyped(KeyEvent e)
+			{
+				if (e.getKeyChar() == '\u007F')
+				{
+					delete();
+				}
+			}
+		});
+		setTitle("Customers");
+		setSize(730, 513);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		is_opened=false;
+		customers=new CustomerCtr();
+		dim= Toolkit.getDefaultToolkit().getScreenSize();
+		setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 		make_manager();
+		Object[][] temp=customers.get_all_customers();
+		refill_table(temp);
+		
+	}
+	private void refill_table(Object[][] temp)
+	{
+		if (temp!=null)
+		{
+			filling=new Object[temp.length][4];
+			for (int i=0;i<temp.length;i++)
+			{
+				filling[i][0]=temp[i][0];
+				filling[i][1]=temp[i][1];
+				filling[i][2]=temp[i][6];
+				filling[i][3]=temp[i][3];
+			}
+			fill_table(filling,column_names);
+		}
+		else 
+		{
+			fill_table(new Object[0][0],column_names);
+		}
 	}
 	
 	private void make_manager()
@@ -90,12 +154,13 @@ public class Customer extends SuperGUI {
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[]{187, 0};
 		gbl_panel.rowHeights = new int[]{0, 0, 0, 0, 80, 48, 0};
-		gbl_panel.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
 		panel_1 = new JPanel();
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+		gbc_panel_1.insets = new Insets(0, 0, 5, 0);
 		gbc_panel_1.fill = GridBagConstraints.BOTH;
 		gbc_panel_1.gridx = 0;
 		gbc_panel_1.gridy = 0;
@@ -104,7 +169,9 @@ public class Customer extends SuperGUI {
 		
 		tf_id = new JTextField("ID");
 		panel_1.add(tf_id);
+		tf_id.setColumns(10);
 		tf_id.setForeground(Color.LIGHT_GRAY);
+		tf_id.setEnabled(false);
 		
 		tf_name = new JTextField();
 		panel_1.add(tf_name);
@@ -133,6 +200,7 @@ public class Customer extends SuperGUI {
 		
 		panel_2 = new JPanel();
 		GridBagConstraints gbc_panel_2 = new GridBagConstraints();
+		gbc_panel_2.insets = new Insets(0, 0, 5, 0);
 		gbc_panel_2.fill = GridBagConstraints.BOTH;
 		gbc_panel_2.gridx = 0;
 		gbc_panel_2.gridy = 1;
@@ -161,7 +229,7 @@ public class Customer extends SuperGUI {
 		tf_phone.setColumns(10);
 		tf_phone.setText("Phone Number");
 		tf_phone.setForeground(Color.LIGHT_GRAY);
-		
+
 		tf_email = new JTextField();
 		panel_2.add(tf_email);
 		tf_email.addFocusListener(new FocusAdapter() {
@@ -188,6 +256,7 @@ public class Customer extends SuperGUI {
 		
 		panel_3 = new JPanel();
 		GridBagConstraints gbc_panel_3 = new GridBagConstraints();
+		gbc_panel_3.insets = new Insets(0, 0, 5, 0);
 		gbc_panel_3.fill = GridBagConstraints.BOTH;
 		gbc_panel_3.gridx = 0;
 		gbc_panel_3.gridy = 2;
@@ -216,7 +285,7 @@ public class Customer extends SuperGUI {
 		tf_address.setColumns(10);
 		tf_address.setText("Address");
 		tf_address.setForeground(Color.LIGHT_GRAY);
-		
+
 		tf_zip = new JTextField();
 		panel_3.add(tf_zip);
 		tf_zip.addFocusListener(new FocusAdapter() {
@@ -243,6 +312,7 @@ public class Customer extends SuperGUI {
 		
 		panel_4 = new JPanel();
 		GridBagConstraints gbc_panel_4 = new GridBagConstraints();
+		gbc_panel_4.insets = new Insets(0, 0, 5, 0);
 		gbc_panel_4.fill = GridBagConstraints.BOTH;
 		gbc_panel_4.gridx = 0;
 		gbc_panel_4.gridy = 3;
@@ -280,6 +350,7 @@ public class Customer extends SuperGUI {
 				{
 					tf_type.setText("");
 					tf_type.setForeground(Color.black);
+					
 				}
 			}
 			public void focusLost(FocusEvent arg1)
@@ -291,36 +362,46 @@ public class Customer extends SuperGUI {
 				}
 			}
 		});
+		tf_type.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent arg0) {
+				if(!is_opened)
+				{
+					is_opened=true;
+					Table p=new Table();
+					p.setVisible(true);
+				}
+			}
+		});
 		panel_4.add(tf_type);
 		tf_type.setColumns(10);
 		tf_type.setText("Customer Type");
 		tf_type.setForeground(Color.LIGHT_GRAY);
 		
 		
-		textArea = new JTextArea();
-		textArea.setLineWrap(true);
-		textArea.addFocusListener(new FocusAdapter() {
+		txt_pref = new JTextArea();
+		txt_pref.setLineWrap(true);
+		txt_pref.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent arg0)
 			{
-				if ((textArea.getText().equals("Preferences"))&&(textArea.getForeground()!=Color.black))
+				if ((txt_pref.getText().equals("Preferences"))&&(txt_pref.getForeground()!=Color.black))
 				{
-					textArea.setText("");
-					textArea.setForeground(Color.black);
+					txt_pref.setText("");
+					txt_pref.setForeground(Color.black);
 				}
 			}
 			public void focusLost(FocusEvent arg1)
 			{
-				if (textArea.getText().isEmpty())
+				if (txt_pref.getText().isEmpty())
 				{
-					textArea.setText("Preferences");
-					textArea.setForeground(Color.LIGHT_GRAY);
+					txt_pref.setText("Preferences");
+					txt_pref.setForeground(Color.LIGHT_GRAY);
 				}
 			}
 		});
-		textArea.setText("Preferences");
-		textArea.setForeground(Color.LIGHT_GRAY);
+		txt_pref.setText("Preferences");
+		txt_pref.setForeground(Color.LIGHT_GRAY);
 		
-		JScrollPane scroll_text = new JScrollPane(textArea);
+		JScrollPane scroll_text = new JScrollPane(txt_pref);
 		scroll_text.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scroll_text.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		GridBagConstraints gbc_scroll_text = new GridBagConstraints();
@@ -330,8 +411,6 @@ public class Customer extends SuperGUI {
 		gbc_scroll_text.gridy = 4;
 		panel.add(scroll_text, gbc_scroll_text);
 		
-		
-		
 		panel_5 = new JPanel();
 		GridBagConstraints gbc_panel_5 = new GridBagConstraints();
 		gbc_panel_5.fill = GridBagConstraints.BOTH;
@@ -339,53 +418,177 @@ public class Customer extends SuperGUI {
 		gbc_panel_5.gridy = 5;
 		panel.add(panel_5, gbc_panel_5);
 		
-		btnNewButton = new JButton("OK");
-		panel_5.add(btnNewButton);
-		
-		btnNewButton_1 = new JButton("Cancel");
-		panel_5.add(btnNewButton_1);
+		btn_ok = new JButton("OK");
+		panel_5.add(btn_ok);
+		btn_ok.addMouseListener(new MouseAdapter()
+		{
+			public void mouseClicked(MouseEvent arg0)
+			{
+				create_edit();
+			}
+		});
 	}
-	
+	private void clear_fields()
+	{
+		tf_id.setText("ID");
+		tf_id.setForeground(Color.LIGHT_GRAY);
+		
+		tf_name.setText("Name");
+		tf_name.setForeground(Color.LIGHT_GRAY);
+		tf_name.setEnabled(true);
+		
+		tf_phone.setText("Phone Number");
+		tf_phone.setForeground(Color.LIGHT_GRAY);
+		tf_phone.setEnabled(true);
+		
+		tf_email.setText("E-mail");
+		tf_email.setForeground(Color.LIGHT_GRAY);
+		tf_email.setEnabled(true);
+		
+		tf_zip.setText("Zip Code");
+		tf_zip.setForeground(Color.LIGHT_GRAY);
+		tf_zip.setEnabled(true);
+		
+		tf_city.setText("City");
+		tf_city.setForeground(Color.LIGHT_GRAY);
+		tf_city.setEnabled(true);
+		
+		tf_type.setText("Customer Type");
+		tf_type.setForeground(Color.LIGHT_GRAY);
+		tf_type.setEnabled(true);
+		
+		tf_address.setText("Address");
+		tf_address.setForeground(Color.LIGHT_GRAY);
+		tf_address.setEnabled(true);
+		
+		txt_pref.setText("Preferences");
+		txt_pref.setForeground(Color.LIGHT_GRAY);
+		txt_pref.setEnabled(true);
+	}
 	protected void search()
 	{
-		Object[][] fill = new Object[1][5];
+		Object[][] temp=null;
 		String info = field_search.getText();
 		if (is_number(info))
 		{
-			if (customers.existing_customer(info))
+			if (customers.customer_exists(Integer.parseInt(info)))
 			{
-			fill[0] = customers.find_customer(info);
-			}
-			else 
-			{
-				fill[0]=null;
+			temp = new Object[1][4];
+			temp[0] = customers.get_customer_by_id(Integer.parseInt(info));
 			}
 		}
 		else
 		{
-			if (customers.find_customer_by_name(info)!=null)
+			if (customers.get_customer_by_name(info)!=null)
 			{
-				fill[0] = customers.find_customer_by_name(info);
-			}
-			else 
-			{
-				fill[0]=null;
+				
+				temp = customers.get_customer_by_name(info);
 			}
 		}
-		fill_table(fill, column_names);
+		refill_table(temp);
 	}
 	
 	protected void clear()
 	{
-		fill_table(filling,column_names);
+		clear_fields();
+		filling=customers.get_all_customers();
+		refill_table(filling);
 		field_search.setText("Name/ID");
 		field_search.setForeground(Color.LIGHT_GRAY);
 	}
-	
 	protected void create()
 	{
-		CustomerManager p = new CustomerManager(-1, 0);
-		p.setVisible(true);
+		clear_fields();
+	}
+	
+	protected void create_edit()
+	{
+		if ((is_ready())&&(tf_name.isEnabled()))
+		{
+			int id=-1;
+			try
+			{
+				id = Integer.parseInt(tf_id.getText());
+			}
+			catch (Exception e)
+			{
+			}
+			String name = tf_name.getText();
+			String phone_nr = tf_phone.getText();
+			String email = tf_email.getText();
+			String address = tf_address.getText();
+			String zipcode = tf_zip.getText();
+			String city = tf_city.getText();
+			int type_id = Integer.parseInt(tf_type.getText());
+			String preferences = txt_pref.getText();
+			if (id==-1)
+			{
+				customers.add_customer(name, phone_nr, email, address, zipcode, city, preferences, type_id);
+				JOptionPane.showMessageDialog(this, "Successully created a customer.", "Success", JOptionPane.INFORMATION_MESSAGE);
+				clear();
+			}
+			else
+			{
+				customers.update_customer(id, name, phone_nr, email, address, zipcode, city, preferences, type_id);
+				JOptionPane.showMessageDialog(this, "Successully edited a customer.", "Success", JOptionPane.INFORMATION_MESSAGE);
+				clear();
+			}
+		}
+	}
+	private boolean is_ready()
+	{
+		boolean is_ready=true;
+		if ((tf_name.getText().equals("Name"))||(tf_name.getText().equals("")))
+		{
+			tf_name.setBackground(Color.red);
+			tf_name.setText("Not Valid");
+			is_ready=false;
+		}
+		if ((tf_phone.getText().equals("Phone Number"))||(tf_phone.getText().equals(""))||(!tf_phone.getText().matches("\\+?[0-9]+(:?-[0-9]+)*")))
+		{
+			tf_phone.setBackground(Color.red);
+			tf_phone.setText("Not Valid");
+			is_ready=false;
+		}
+		if ((tf_email.getText().equals("E-mail"))||(tf_email.getText().equals("")))
+		{
+			tf_email.setBackground(Color.red);
+			tf_email.setText("Not valid");
+			is_ready=false;
+		}
+		if ((tf_address.getText().equals("Address"))||(tf_address.getText().equals("")))
+		{
+			tf_address.setBackground(Color.red);
+			tf_address.setText("Not valid");
+			is_ready=false;
+		}
+		if ((tf_zip.getText().equals("Zip Code"))||(tf_address.getText().equals("")))
+		{
+			tf_zip.setBackground(Color.red);
+			tf_zip.setText("Not valid");
+			is_ready=false;
+		}
+		if ((tf_city.getText().equals("City"))||(tf_address.getText().equals("")))
+		{
+			tf_city.setBackground(Color.red);
+			tf_city.setText("Not valid");
+			is_ready=false;
+		}
+		if ((tf_type.getText().equals("Customer Type"))||(tf_address.getText().equals(""))||(!is_number(tf_type.getText())))
+		{
+			tf_type.setBackground(Color.red);
+			tf_type.setText("Not valid");
+			is_ready=false;
+		}
+		
+		if ((txt_pref.getText().equals("Preferences"))||(tf_address.getText().equals("")))
+		{
+			txt_pref.setBackground(Color.red);
+			txt_pref.setText("Not valid");
+			is_ready=false;
+		}
+		
+		return is_ready;
 	}
 	
 	protected void view()
@@ -393,11 +596,8 @@ public class Customer extends SuperGUI {
 		int row_index = table.getSelectedRow();
 		if (row_index != -1)
 		{
-			if( table.getModel().getValueAt(row_index, 0) != null)
-			{
-				CustomerManager p = new CustomerManager((int) table.getModel().getValueAt(row_index, 0), 2);
-				p.setVisible(true);
-			}
+			int t_id=(int)table.getModel().getValueAt(row_index, 0);
+			fill_fields(customers.get_customer_by_id(t_id),false);
 		}
 	}
 	
@@ -406,10 +606,12 @@ public class Customer extends SuperGUI {
 		int row_index = table.getSelectedRow();
 		if (row_index != -1)
 		{
+			
 			if( table.getModel().getValueAt(row_index, 0) != null)
 			{
-				CustomerManager p = new CustomerManager((int) table.getModel().getValueAt(row_index, 0), 1);
-				p.setVisible(true);
+				int t_id=(int) table.getModel().getValueAt(row_index, 0);
+				Object[] temp=customers.get_customer_by_id(t_id);
+				fill_fields(temp,true);
 			}
 		}
 	}
@@ -425,13 +627,105 @@ public class Customer extends SuperGUI {
 						"Are you sure you want to delete this customer?",
 						"Delete customer", JOptionPane.YES_NO_OPTION))
 				{
-					customers.delete_customer((String) table.getModel().getValueAt(row_index, 0));
-					//filling=customers.get_all_customers();
-					filling=new Object[0][0];
+					customers.delete_customer((int)table.getModel().getValueAt(row_index, 0));
+					filling=customers.get_all_customers();
 					fill_table(filling,column_names);
 				}
 			}
 		}
 	}
+	private void fill_fields(Object[] fill,boolean is_edit)
+	{
+		tf_id.setText(""+fill[0]);
+		tf_name.setText(""+fill[1]);
+		tf_phone.setText(""+fill[6]);
+		tf_email.setText(""+fill[5]);
+		tf_address.setText(""+fill[2]);
+		tf_zip.setText(""+fill[3]);
+		tf_city.setText(""+fill[4]);
+		tf_type.setText(""+fill[8]);
+		txt_pref.setText(""+fill[7]);
+		if (!is_edit)
+		{
+			tf_name.setEnabled(false);
+			tf_phone.setEnabled(false);
+			tf_email.setEnabled(false);
+			tf_address.setEnabled(false);
+			tf_zip.setEnabled(false);
+			tf_city.setEnabled(false);
+			tf_type.setEnabled(false);
+			txt_pref.setEnabled(false);
+		}
+		else
+		{
+			tf_id.setForeground(Color.black);
+			tf_name.setEnabled(true);
+			tf_name.setForeground(Color.black);
+			tf_phone.setEnabled(true);
+			tf_phone.setForeground(Color.black);
+			tf_email.setEnabled(true);
+			tf_email.setForeground(Color.black);
+			tf_address.setEnabled(true);
+			tf_address.setForeground(Color.black);
+			tf_zip.setEnabled(true);
+			tf_zip.setForeground(Color.black);
+			tf_city.setEnabled(true);
+			tf_city.setForeground(Color.black);
+			tf_type.setEnabled(true);
+			tf_type.setForeground(Color.black);
+			txt_pref.setEnabled(true);
+			txt_pref.setForeground(Color.black);
+		}
+	}
+}
 
+class Table extends SuperGUI {
+	
+	private Object[][] filling;
+	private Object[] column_names={"id","Discount Price", "Discount %", "Free Shipping"};
+    private Point initialClick;
+    private CustomerCtr customers;
+	
+	public Table() {
+		contentPane.setBorder(new TitledBorder(null, "Customer Type", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+	    getContentPane().addMouseListener(new MouseAdapter() {
+	        public void mousePressed(MouseEvent e) {
+	            initialClick = e.getPoint();
+	            getComponentAt(initialClick);
+	        }
+		});
+		getContentPane().addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent e) {
+	            int thisX = getLocation().x;
+	            int thisY = getLocation().y;
+
+	            int xMoved = (thisX + e.getX()) - (thisX + initialClick.x);
+	            int yMoved = (thisY + e.getY()) - (thisY + initialClick.y);
+
+	            int X = thisX + xMoved;
+	            int Y = thisY + yMoved;
+	            setLocation(X, Y);
+			}
+		});
+		setSize(450, 300);
+		JPanel panel = new JPanel();
+		contentPane.add(panel, BorderLayout.SOUTH);
+		this.setUndecorated(true);
+		filling= customers.get_all_customer_types();
+		fill_table(filling, column_names);
+	}
+	protected void search()
+	{
+		
+	}
+	protected void clear()
+	{
+		frame.make_manager();
+	}
+	
+	protected void view()
+	{
+		
+	}
 }

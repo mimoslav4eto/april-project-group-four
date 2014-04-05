@@ -49,13 +49,12 @@ public class SuperGUI extends JFrame {
 	protected JTextField field_search;
 	private JPanel panel_2;
 	private JPanel search_panel;
-	private JPanel button_panel;
+	protected JPanel button_panel;
 	private JPanel panel_1; 
 	private JScrollPane scrollPane;
 	protected JTable table;
 	private Object[] column_names = {};
 	private Object[][] filling;
-	private JButton btn_details;
 
 	/**
 	 * Launch the application.
@@ -79,7 +78,7 @@ public class SuperGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public SuperGUI() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 570, 387);
 		contentPane = new JPanel();
 		setContentPane(contentPane);
@@ -98,7 +97,7 @@ public class SuperGUI extends JFrame {
 		
 		panel_2 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_2.getLayout();
-		button_panel.add(panel_2, BorderLayout.WEST);
+		button_panel.add(panel_2, BorderLayout.EAST);
 		filling = new Object[0][0];
 		make_buttons();
 		make_table();
@@ -151,7 +150,7 @@ public class SuperGUI extends JFrame {
 		});
 		panel_1.add(btn_clear);
 		
-		JButton btn_create = new JButton("Create");
+		JButton btn_create = new JButton("New");
 		btn_create.addMouseListener(new MouseAdapter()
 		{
 			public void mouseClicked(MouseEvent arg1)
@@ -166,20 +165,10 @@ public class SuperGUI extends JFrame {
 		{
 			public void mouseClicked(MouseEvent arg2)
 			{
-				edit();
+				create_edit();
 			}
 		});
 		panel_2.add(btn_edit);
-		
-		btn_details = new JButton("Details");
-		btn_details.addMouseListener(new MouseAdapter()
-		{
-			public void mouseClicked(MouseEvent arg3)
-			{
-				view();
-			}
-		});
-		panel_2.add(btn_details);
 		
 		JButton btn_delete = new JButton("Delete");
 		btn_delete.addMouseListener(new MouseAdapter()
@@ -282,5 +271,9 @@ public class SuperGUI extends JFrame {
 			return false;
 		}
 		return true;
+	}
+	protected void create_edit()
+	{
+		
 	}
 }
