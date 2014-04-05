@@ -31,7 +31,7 @@ public class SupplyLineCtr
 		if(all_products == null)
 		{
 			all_products = new HashMap<Integer, Product>();
-			get_all_products();
+			find_all_products();
 		}
 		db_s = new DBSupplier();
 		if(sup == null)
@@ -51,6 +51,23 @@ public class SupplyLineCtr
 		return make_products_array(find_products_by_name(name, false));
 	}
 	
+	public Object[][] get_all_products()
+	{
+		return make_products_array(find_all_products());
+	}
+	
+	public Object[][] get_non_deleted_products()
+	{
+		return make_products_array(find_all_non_deleted_products());
+	}
+	
+	public Object[][] get_deleted_products()
+	{
+		return make_products_array(find_all_deleted_products());
+	}
+	
+	
+	
 	public Object[] get_supplier_by_id(int id)
 	{
 		return make_supplier_array(find_supplier(id, false));
@@ -59,6 +76,11 @@ public class SupplyLineCtr
 	public Object[][] get_suppliers_by_name(String name)
 	{
 		return make_suppliers_array(find_suppliers_by_name(name, false));
+	}
+	
+	public Object[][] get_all_suppliers()
+	{
+		return make_suppliers_array(find_all_suppliers(false));
 	}
 	
 	public Object[][] get_suppliers_of(int product_id)
@@ -80,6 +102,16 @@ public class SupplyLineCtr
 			return make_products_array(t_sup.getSupplies_with());
 		}
 		return null;
+	}
+	
+	public boolean product_exists(int product_id)
+	{
+		return find_product(product_id, false) != null;
+	}
+	
+	public boolean supplier_exists(int supplier_id)
+	{
+		return find_supplier(supplier_id, false) != null;
 	}
 	
 	public boolean add_product(String name, float retail_price, Float price, Float rent_price, int min_amount,
@@ -271,7 +303,7 @@ public class SupplyLineCtr
 		return t_s;
 	}
 	
-	private HashMap<Integer, Product> get_all_products()
+	private HashMap<Integer, Product> find_all_products()
 	{
 		if(all_products.isEmpty())
 		{
@@ -280,22 +312,40 @@ public class SupplyLineCtr
 		return all_products;
 	}
 	
-	private ArrayList<Supplier> get_all_suppliers(boolean make_association)
+	private ArrayList<Product> find_all_non_deleted_products()
+	{
+		Collection<Product> products = all_products.values();
+		ArrayList<Product> non_deleted = new ArrayList<Product>();
+		for(Product prod : products)
+		{
+			if (!prod.isDeleted())
+			{
+				non_deleted.add(prod);
+			}
+		}
+		return non_deleted;
+	}
+	
+	private ArrayList<Product> find_all_deleted_products()
+	{
+		Collection<Product> products = all_products.values();
+		ArrayList<Product> deleted = new ArrayList<Product>();
+		for(Product prod : products)
+		{
+			if (prod.isDeleted())
+			{
+				deleted.add(prod);
+			}
+		}
+		return deleted;
+	}
+	
+	private ArrayList<Supplier> find_all_suppliers(boolean make_association)
 	{
 
 		return db_s.get_all_suppliers(make_association);
 	}
 	
-	
-	public boolean product_exists(int product_id)
-	{
-		return find_product(product_id, false) != null;
-	}
-	
-	public boolean supplier_exists(int supplier_id)
-	{
-		return find_supplier(supplier_id, false) != null;
-	}
 	
 	private Object[] make_product_array(Product prod)
 	{
@@ -306,15 +356,16 @@ public class SupplyLineCtr
 		Float rent_price = prod.getRent_price();
 		int amount = prod.getAmount();
 		int min_amount = prod.getMin_amount();
+		boolean deleted = prod.isDeleted();
 		
-		Object[] data = { id, name, retail_price, price, rent_price, amount, min_amount };
+		Object[] data = { id, name, retail_price, price, rent_price, amount, min_amount, deleted };
 		return data;
 	}
 	
 	private Object[][] make_products_array(HashMap<Integer, Product> map)
 	{
 		Collection<Product> products = map.values();
-		Object[][] data = new Object[products.size()][7];
+		Object[][] data = new Object[products.size()][8];
 		int i = 0;
 		for(Product product : products)
 		{
@@ -325,7 +376,7 @@ public class SupplyLineCtr
 	
 	private Object[][] make_products_array(ArrayList<Product> products)
 	{
-		Object data[][] = new Object[products.size()][7];
+		Object data[][] = new Object[products.size()][8];
 		int i = 0;
 		for(Product product : products)
 		{
