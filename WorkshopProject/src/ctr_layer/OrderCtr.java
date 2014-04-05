@@ -162,9 +162,12 @@ public class OrderCtr
 		float total_price = order.getTotal_price();
 		Delivery del = order.getDelivery();
 		boolean complete = order.isComplete();
+		
 		if(del == null)
 		{
 			Object[] data = { id, payment_date, total_price, invoice_nr, null, null, cust_id, cust_name, complete };
+			System.out.println(data[1]);
+			
 			return data;
 		}
 		else
@@ -172,6 +175,7 @@ public class OrderCtr
 			float delivery_cost = del.getCost();
 			String delivery_date = Utilities.convert_date_to_string(del.getDate());
 			Object[] data = {id, payment_date, total_price, invoice_nr, delivery_cost, delivery_date, cust_id, cust_name, complete };
+			System.out.println(data[1]);
 			return data;
 		}
 		
@@ -184,7 +188,9 @@ public class OrderCtr
 		int i = 0;
 		for (Order order : orders)
 		{
+			
 			data[i] = make_order_array(order);
+			i++;
 		}
 		return data;
 	}
@@ -210,6 +216,7 @@ public class OrderCtr
 		for(SaleLineItem item : items)
 		{
 			data[i] = make_item_array(item);
+			i++;
 		}
 		return data;
 	}

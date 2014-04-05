@@ -370,6 +370,7 @@ public class SupplyLineCtr
 		for(Product product : products)
 		{
 			data[i] = make_product_array(product);
+			i++;
 		}
 		return data;
 	}
@@ -381,6 +382,7 @@ public class SupplyLineCtr
 		for(Product product : products)
 		{
 			data[i] = make_product_array(product);
+			i++;
 		}
 		return data;
 	}
@@ -409,6 +411,7 @@ public class SupplyLineCtr
 		for(Supplier supplier : suppliers)
 		{
 			data[i] = make_supplier_array(supplier);
+			i++;
 		}
 		return data;
 	}

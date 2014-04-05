@@ -255,6 +255,7 @@ public class CustomerCtr
 		for(CustomerType type : types)
 		{
 			data[i] = make_type_array(type);
+			i++;
 		}
 		return data;
 	}

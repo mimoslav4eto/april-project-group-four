@@ -210,6 +210,7 @@ public class DBOrder
 					ord.setItems(create_items(items_result));
 				}
 				orders.add(ord);
+				
 			}
 			stmt.close();
 		}
@@ -258,6 +259,7 @@ public class DBOrder
 			date.setTime(results.getDate("payment_date").getTime());
 			ord.setPayment_date(date);
 			ord.setComplete(results.getInt("complete") == 1);
+			
 		}
 		catch(SQLException se)
 		{

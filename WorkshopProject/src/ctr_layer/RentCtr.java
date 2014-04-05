@@ -199,6 +199,7 @@ public class RentCtr
 		for(Rent rent : rents)
 		{
 			data[i] = make_rent_array(rent);
+			i++;
 		}
 		return data;
 	}
@@ -224,6 +225,7 @@ public class RentCtr
 		for(RentLineItem item : items)
 		{
 			data[i] = make_item_array(item);
+			i++;
 		}
 		return data;
 	}
