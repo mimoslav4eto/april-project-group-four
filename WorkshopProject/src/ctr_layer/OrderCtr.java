@@ -26,6 +26,11 @@ public class OrderCtr
 		db_c = new DBCustomer();
 	}
 	
+	public boolean order_exists(int id)
+	{
+		return find_order(id, false) != null;
+	}
+	
 	public boolean add_order_with_del(int customer_id, boolean pay_on_delivery, Date delivery_date, Date payment_date,
 			int invoice_nr, LinkedList<int[]> ids_amounts)
 	{
@@ -94,9 +99,13 @@ public class OrderCtr
 		return t_ord;
 	}
 	
-	public boolean order_exists(int id)
+	private ArrayList<Order> find_all_orders(boolean make_association)
 	{
-		return find_order(id, false) != null;
+		return db.get_all_orders(make_association);
 	}
+	
+	
+	
+	
 
 }
