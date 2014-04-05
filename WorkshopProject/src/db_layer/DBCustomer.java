@@ -35,6 +35,12 @@ public class DBCustomer
 		return multiple_where_customer("", "", -1);
 	}
 	
+	public HashMap<Integer, Customer> get_some_customers(String variable_name, String where_clause, int int_where_clause)
+	{
+		String var = "e." + variable_name + "=";
+		return multiple_where_customer(var, where_clause, int_where_clause);
+	}
+	
 	public ArrayList<CustomerType> get_all_types()
 	{
 		return multiple_where_type("", "", -1);
