@@ -764,7 +764,7 @@ class Table extends SuperGUI {
 		if (row_index != -1)
 		{
 			int t_id=(int)table.getModel().getValueAt(row_index, 0);
-			tf_type.setText(""+t_id);
+			tf_type.setText(String.valueOf(t_id));
 	}
 	}
 }

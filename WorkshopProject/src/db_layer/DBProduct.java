@@ -55,7 +55,7 @@ public class DBProduct
 		try
 		{
 			id = UtilityFunctions.get_max_id("SELECT max(id) FROM Product") + 1;
-			PreparedStatement stmt = UtilityFunctions.make_insert_statement(con, "Product", "id, name, retail_price, price, rent_price, min_amount, deleted, amount");
+			PreparedStatement stmt = UtilityFunctions.make_insert_statement(con, "Product", "id, name, retail_price, price, rent_price, min_amount, amount, deleted");
 			stmt.setInt(1, id);
 			stmt.setString(2, name);
 			stmt.setFloat(3, retail_price);

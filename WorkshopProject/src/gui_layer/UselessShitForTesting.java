@@ -95,7 +95,7 @@ public class UselessShitForTesting extends JFrame
 //		textField.setText("Adding supplier successfull: " + String.valueOf(slc.add_supplier("John", "223322", "email", "address", "DJ9234", "city", "reg45353", null, "France")));
 //		textField_1.setText("Updating product successfull: " + String.valueOf(slc.update_product_amount(4, 654)));
 //		textField_2.setText("Finding product: 1 " + String.valueOf(slc.supplier_exists(28) && slc.product_exists(1)));
-		LinkedList<int[]> ids_amounts = new LinkedList<int[]>();
+		/*LinkedList<int[]> ids_amounts = new LinkedList<int[]>();
 		for (int i = 1; i <= 11; i++)
 		{
 			int[] data = {i, i*5};
@@ -104,7 +104,8 @@ public class UselessShitForTesting extends JFrame
 		
 		textField.setText(String.valueOf(oc.add_order_with_del(14, true, date, next_day, 234, ids_amounts, true)));
 		textField_1.setText(String.valueOf(oc.add_order_without_del(15, date, 23425, ids_amounts, false)));
-		textField_2.setText(String.valueOf(oc.order_exists(4)));
+		textField_2.setText(String.valueOf(oc.order_exists(4)));*/
+		slc.add_product("assa", 54f, 32f, 23f, 12, 22, -1);
 //		textField_1.setText(String.valueOf(cc.add_customer("Bob", "535062444", "some@new.com", "nowhere", "DK9220", "Aalborg", "No real preferences", 1)));
 //		textField_2.setText(cc.find_customer_name(3));
 	}

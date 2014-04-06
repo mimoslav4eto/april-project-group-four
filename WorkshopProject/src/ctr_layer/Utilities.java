@@ -28,6 +28,21 @@ public class Utilities
 		return date;
 	}
 	
+	public static boolean valid_date(String s)
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		try
+		{
+			sdf.parse(s);
+			return true;
+		}
+		catch(ParseException e)
+		{
+			return false;
+		}
+		
+	}
+	
 	public static String convert_date_to_string(Date date)
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
