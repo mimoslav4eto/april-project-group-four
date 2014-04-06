@@ -26,6 +26,12 @@ public class Delivery
 		cost = calculate_cost();
 	
 	}
+	
+	public Delivery(boolean pay_on_delivery)
+	{
+		this.pay_on_delivery = pay_on_delivery;
+		cost = calculate_cost();
+	}
 
 
 

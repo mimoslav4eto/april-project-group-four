@@ -104,6 +104,33 @@ public class SupplyLineCtr
 		return null;
 	}
 	
+	public float calculate_ord_cost(int id, int amount)
+	{
+		return find_product(id, false).getPrice()*amount;
+	}
+	
+	public float calculate_rent_cost(int id, int amount, int days)
+	{
+		return find_product(id, false).getRent_price()*amount*days;
+	}
+	
+	public boolean is_such_amount(int product_id, int amount)
+	{
+		return find_product(product_id, false).getAmount() > amount;
+	}
+	
+	public boolean subtract_amount(int product_id, int amount)
+	{
+		Product prod = find_product(product_id, false);
+		prod.setAmount(prod.getAmount()-amount);
+		if (db_p.update_product(prod) == 1)
+		{
+			all_products.put(product_id, prod);
+			return true;
+		}
+		return false;
+	}
+	
 	public boolean product_exists(int product_id)
 	{
 		return find_product(product_id, false) != null;

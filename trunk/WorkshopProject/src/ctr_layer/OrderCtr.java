@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import model_layer.Customer;
+import model_layer.CustomerType;
 import model_layer.Delivery;
 import model_layer.Order;
 import model_layer.Product;
@@ -20,11 +21,18 @@ public class OrderCtr
 	private DBProduct db_p;
 	private static Order ord;
 	private DBCustomer db_c;
+	private static Customer cust;
+	private SupplyLineCtr prod_ctr;
 	public OrderCtr()
 	{
 		db = new DBOrder();
 		db_p = new DBProduct();
 		db_c = new DBCustomer();
+		prod_ctr = new SupplyLineCtr();
+		if(cust == null)
+		{
+			cust = new Customer();
+		}
 		if(ord == null)
 		{
 			ord = new Order();
@@ -61,11 +69,14 @@ public class OrderCtr
 		return find_order(id, false) != null;
 	}
 	
-	public boolean add_order_with_del(int customer_id, boolean pay_on_delivery, Date delivery_date, Date payment_date,
-			int invoice_nr, LinkedList<int[]> ids_amounts, boolean complete)
+	
+	
+	public boolean add_order_with_del(int customer_id, boolean pay_on_delivery, String delivery_date, String payment_date,
+			 LinkedList<int[]> ids_amounts, boolean complete)
 	{
-		
-		Delivery del = new Delivery(true, delivery_date, pay_on_delivery);
+		Date p_d = Utilities.convert_string_to_date(payment_date);
+		Date d_d = Utilities.convert_string_to_date(delivery_date);
+		Delivery del = new Delivery(true, d_d, pay_on_delivery);
 		ArrayList<SaleLineItem> items = new ArrayList<SaleLineItem>();
 		SaleLineItem item;
 		Product prod;
@@ -78,7 +89,7 @@ public class OrderCtr
 			items.add(item);
 			
 		}
-		ord = new Order(cust, payment_date, invoice_nr, items, complete);
+		ord = new Order(cust, p_d, items, complete);
 		float price_qual_for_free_shipment = cust.getCust_type().getPrice_qual_for_free_shipment();
 		if (ord.getTotal_price() >  price_qual_for_free_shipment && price_qual_for_free_shipment != -1)
 		{
@@ -89,8 +100,51 @@ public class OrderCtr
 		return  rc == 1;
 	}
 	
-	public boolean add_order_without_del(int customer_id,  Date payment_date, int invoice_nr, LinkedList<int[]> ids_amounts, boolean complete)
+	public float[] calc_order_price(int cust_id, LinkedList<int[]> ids_amounts, boolean pay_on_delivery, boolean delivery)
 	{
+		float[] prices = new float[2];
+		float tot_price = 0;
+		float del_cost = 0; 
+		if(cust.getId()!= cust_id)
+		{
+			cust=db_c.find_customer(cust_id);
+		}
+		CustomerType ct = cust.getCust_type();
+		for(int[] data : ids_amounts)
+		{
+			tot_price += prod_ctr.calculate_ord_cost(data[0], data[1]);
+		}
+		float price_qual_for_free = ct.getPrice_qual_for_free_shipment();
+		float price_qual = ct.getPrice_qual_for_disc();
+		float disc_perc = ct.getDisc_perc();
+		if(delivery)
+		{
+			if(price_qual_for_free!= -1 && tot_price > price_qual_for_free)
+			{
+				del_cost = 0;
+			}
+			else
+			{
+				del_cost = new Delivery(pay_on_delivery).getCost(); 
+			}
+			
+		}
+		if(price_qual != -1)
+		{
+			tot_price *= disc_perc;
+		}
+		tot_price += del_cost;
+		prices[0] = tot_price;
+		prices[1] = del_cost;
+		return prices;
+
+	}
+	
+
+	
+	public boolean add_order_without_del(int customer_id,  String payment_date, LinkedList<int[]> ids_amounts, boolean complete)
+	{
+		Date p_d = Utilities.convert_string_to_date(payment_date);
 		ArrayList<SaleLineItem> items = new ArrayList<SaleLineItem>();
 		SaleLineItem item;
 		Product prod;
@@ -102,13 +156,13 @@ public class OrderCtr
 			items.add(item);
 			
 		}
-		ord = new Order(cust, payment_date, invoice_nr, items, complete);
+		ord = new Order(cust, p_d, items, complete);
 		return db.insert_order(ord) == 1;
 	}
 	
 	public boolean update_delivery_status(int order_id)
 	{
-		ord = find_order(order_id, true);
+		ord = find_order(order_id, false);
 		Delivery del = ord.getDelivery();
 		del.setIn_progress(false);
 		ord.setDelivery(del);
@@ -119,6 +173,12 @@ public class OrderCtr
 	{
 		ord = find_order(order_id, false);
 		ord.setComplete(true);
+		Delivery del = ord.getDelivery();
+		if (del != null && del.isIn_progress())
+		{
+			del.setIn_progress(false);
+			ord.setDelivery(del);
+		}
 		return db.update_order(ord) == 1;
 	}
 	
@@ -165,7 +225,7 @@ public class OrderCtr
 		
 		if(del == null)
 		{
-			Object[] data = { id, payment_date, total_price, invoice_nr, null, null, cust_id, cust_name, complete };
+			Object[] data = { id, payment_date, total_price, invoice_nr,  cust_id, cust_name, null, null, null, null, complete };
 			System.out.println(data[1]);
 			
 			return data;
@@ -174,7 +234,9 @@ public class OrderCtr
 		{
 			float delivery_cost = del.getCost();
 			String delivery_date = Utilities.convert_date_to_string(del.getDate());
-			Object[] data = {id, payment_date, total_price, invoice_nr, delivery_cost, delivery_date, cust_id, cust_name, complete };
+			boolean in_progress = del.isIn_progress();
+			boolean pay_on_delivery = del.isPay_on_delivery();
+			Object[] data = { id, payment_date, total_price, invoice_nr,  cust_id, cust_name, in_progress, pay_on_delivery, delivery_date,  delivery_cost, complete };
 			System.out.println(data[1]);
 			return data;
 		}
@@ -184,7 +246,7 @@ public class OrderCtr
 	
 	private Object[][] make_orders_array(ArrayList<Order> orders)
 	{
-		Object[][] data = new Object[orders.size()][9];
+		Object[][] data = new Object[orders.size()][11];
 		int i = 0;
 		for (Order order : orders)
 		{
