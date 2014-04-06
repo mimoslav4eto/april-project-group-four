@@ -33,8 +33,7 @@ public class Utilities
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		try
 		{
-			sdf.parse(s);
-			return true;
+			return (sdf.parse(s).getTime() + 1000*60*60*24- new Date().getTime()) >= 0;
 		}
 		catch(ParseException e)
 		{

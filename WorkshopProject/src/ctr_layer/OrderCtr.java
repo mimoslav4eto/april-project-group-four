@@ -84,8 +84,10 @@ public class OrderCtr
 
 		for(int[] data : ids_amounts)
 		{
+			int amount = data[1];
 			prod = db_p.find_product(data[0], false);
-			item = new SaleLineItem(prod, data[1]);
+			prod_ctr.subtract_amount(prod.getId(), amount);
+			item = new SaleLineItem(prod, amount);
 			items.add(item);
 			
 		}
@@ -98,6 +100,26 @@ public class OrderCtr
 		ord.setDelivery(del);
 		int rc = db.insert_order(ord);
 		return  rc == 1;
+	}
+	
+	public boolean add_order_without_del(int customer_id,  String payment_date, LinkedList<int[]> ids_amounts, boolean complete)
+	{
+		Date p_d = Utilities.convert_string_to_date(payment_date);
+		ArrayList<SaleLineItem> items = new ArrayList<SaleLineItem>();
+		SaleLineItem item;
+		Product prod;
+		Customer cust = db_c.find_customer(customer_id);
+		for(int[] data : ids_amounts)
+		{
+			int amount = data[1];
+			prod = db_p.find_product(data[0], false);
+			prod_ctr.subtract_amount(prod.getId(), amount);
+			item = new SaleLineItem(prod, data[1]);
+			items.add(item);
+			
+		}
+		ord = new Order(cust, p_d, items, complete);
+		return db.insert_order(ord) == 1;
 	}
 	
 	public float[] calc_order_price(int cust_id, LinkedList<int[]> ids_amounts, boolean pay_on_delivery, boolean delivery)
@@ -131,7 +153,7 @@ public class OrderCtr
 		}
 		if(price_qual != -1)
 		{
-			tot_price *= disc_perc;
+			tot_price *=  (1- disc_perc);
 		}
 		tot_price += del_cost;
 		prices[0] = tot_price;
@@ -142,23 +164,7 @@ public class OrderCtr
 	
 
 	
-	public boolean add_order_without_del(int customer_id,  String payment_date, LinkedList<int[]> ids_amounts, boolean complete)
-	{
-		Date p_d = Utilities.convert_string_to_date(payment_date);
-		ArrayList<SaleLineItem> items = new ArrayList<SaleLineItem>();
-		SaleLineItem item;
-		Product prod;
-		Customer cust = db_c.find_customer(customer_id);
-		for(int[] data : ids_amounts)
-		{
-			prod = db_p.find_product(data[0], false);
-			item = new SaleLineItem(prod, data[1]);
-			items.add(item);
-			
-		}
-		ord = new Order(cust, p_d, items, complete);
-		return db.insert_order(ord) == 1;
-	}
+	
 	
 	public boolean update_delivery_status(int order_id)
 	{

@@ -445,13 +445,22 @@ public class OrderGUI extends OrderRentSuperGUI
 	@Override
 	protected void details()
 	{
-		
+		int row_index = table.getSelectedRow();
+		if (row_index != -1)
+		{
+			if( table.getModel().getValueAt(row_index, 0) != null)
+			{
+				NewOrderGUI no = new NewOrderGUI(false, (int)table.getModel().getValueAt(row_index, 0));
+				no.setVisible(true);
+			}
+		}
 	}
 	
 	@Override
 	protected void create()
 	{
-		
+		NewOrderGUI no = new NewOrderGUI(true, -1);
+		no.setVisible(true);
 	}
 	
 	private void finish_delivery()

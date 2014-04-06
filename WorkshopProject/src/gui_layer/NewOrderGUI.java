@@ -18,6 +18,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.FocusAdapter;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -71,6 +73,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 	private JCheckBox chckbxPaymentOnDelivery;
 	private JCheckBox chckbxDelivered;
 	private JCheckBox chckbxDelivery;
+	private boolean is_open;
 	private ArrayList<Object[]> selected;
 	private boolean delivery;
 	private float[] prices;
@@ -95,6 +98,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 	{
 		super(i_creating, i_id);
 		delivery = false;
+		is_open = false;
 		ord_ctr = new OrderCtr();
 		prod_ctr = new SupplyLineCtr();
 		ids_amounts = new LinkedList<int[]>();
@@ -153,7 +157,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 		JLabel p_d_lbl = new JLabel("Payment date");
 		panel_2.add(p_d_lbl);
 		
-		p_d_tf = new JTextField();
+		p_d_tf = new DateTextField();
 		panel_2.add(p_d_tf);
 		p_d_tf.setColumns(10);
 		
@@ -252,7 +256,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 		JLabel d_d_lbl = new JLabel("Delivery date");
 		panel_7.add(d_d_lbl);
 		
-		d_d_tf = new JTextField();
+		d_d_tf = new DateTextField();
 		panel_7.add(d_d_tf);
 		d_d_tf.setColumns(10);
 
@@ -355,6 +359,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 				{
 					make_normal_bg(d_d_tf);
 				}
+
 			});
 			d_c_tf.setEnabled(false);
 			c_n_tf.setEnabled(false);
@@ -363,10 +368,37 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 				public void focusGained(FocusEvent arg0)
 				{
 					make_normal_bg(c_id_tf);
+					
+				}
+				
+				public void focusLost(FocusEvent arg0)
+				{
+					display_prices();
 				}
 			});
+			
+			c_id_tf.addMouseListener(new MouseAdapter()
+			{
+				public void mouseClicked(MouseEvent e)
+				{
+					if(!is_open)
+					{
+						is_open = true;
+						AddCustomer ac = new AddCustomer();
+						ac.setVisible(true);
+						
+					}
+				}
+			} );
 			chckbxDelivered.setVisible(false);
 			chckbxPaymentOnDelivery.setEnabled(false);
+			chckbxPaymentOnDelivery.addMouseListener(new MouseAdapter()
+			{
+				public void mouseClicked(MouseEvent arg0)
+				{
+					display_prices();
+				}
+			});
 			chckbxDelivery.addMouseListener(new MouseAdapter()
 			{
 				public void mouseClicked(MouseEvent arg0)
@@ -385,6 +417,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 						delivery = true;
 						d_d_tf.setEnabled(true);
 						chckbxPaymentOnDelivery.setEnabled(true);
+						display_prices();
 					}
 				}
 			});
@@ -476,6 +509,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 			if(correct)
 			{
 				ord_ctr.add_order_with_del(cust_id, pay_on_delivery, delivery_date, payment_date, ids_amounts, complete);
+				this.dispose();
 			}
 		}
 		else if(correct)
@@ -485,6 +519,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 				complete = true;
 			}
 			ord_ctr.add_order_without_del(cust_id, payment_date, ids_amounts, complete);
+			this.dispose();
 			
 		}
 			
@@ -494,24 +529,57 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 	@Override
 	protected void edit()
 	{
-		// TODO Auto-generated method stub
-
+		if(creating)
+		{
+			int row_index = table.getSelectedRow();
+			if (row_index != -1)
+			{
+				if( table.getModel().getValueAt(row_index, 0) != null)
+				{
+					int id = (int)table.getModel().getValueAt(row_index, 0);
+					String quantity = JOptionPane
+							.showInputDialog("Please input the amount of the product");
+					if (is_number(quantity))
+					{
+						int amount =Integer.parseInt(quantity);
+						if (amount > 0)
+						{
+							if (prod_ctr.is_such_amount(id, amount))
+							{
+								int[] data = { id, amount };
+								replace_ids_amounts(data);
+								selected_replace((make_selected(prod_ctr.get_product_by_id(id), amount)));
+								refresh_table(make_filling(selected));
+								display_prices();
+							}
+							else
+							{
+								JOptionPane.showMessageDialog(this, "Amount too high.\nNot enough product in the stock.", "Error", JOptionPane.ERROR_MESSAGE);
+							}
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(this, "Amount cannot be negative.", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(this, "Amount must be a number.", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		}
 	}
 
 	@Override
 	protected void add()
 	{
-		AddProduct a = new AddProduct();
-		a.setVisible(true);
-		
-		String c_id = c_id_tf.getText();
-		if(is_number(c_id))
+		if(!is_open)
 		{
-			int cust_id = Integer.parseInt(c_id);
-			if(!cust_ctr.customer_exists(cust_id))
-			{
-				prices = ord_ctr.calc_order_price(cust_id, ids_amounts, chckbxPaymentOnDelivery.isSelected(), delivery);
-			}
+			AddProduct a = new AddProduct();
+			
+			a.setVisible(true);
+			is_open = true;
 		}
 	}
 		
@@ -520,9 +588,24 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 	@Override
 	protected void delete()
 	{
-		// TODO Auto-generated method stub
+		int row_index = table.getSelectedRow();
+		if (row_index != -1)
+		{
+			if( table.getModel().getValueAt(row_index, 0) != null)
+			{
+				remove_from_selected_and_ids((int)table.getModel().getValueAt(row_index, 0));
+				refresh_table(make_filling(selected));
+			}
+		}
 
 	}
+
+	@Override
+	protected void cancel()
+	{
+		this.dispose();
+	}
+
 	
 	private void make_error_bg(JTextField field)
 	{
@@ -539,17 +622,127 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 		}
 	}
 	
-	class AddProduct extends ProductAdder
+	private Object[] make_selected(Object[] prod_data, int amount)
+	{
+		Object[] data = new Object[6];
+		data[0] = prod_data[0];
+		data[1] = prod_data[1];
+		data[2] = prod_data[2];
+		data[3] = prod_data[3];
+		data[4] = amount;
+		data[5] = (float)prod_data[3]*amount;
+		return data;
+	}
+	
+	private Object[][] make_filling(ArrayList<Object[]> data)
+	{
+		Object[][] info = new Object[data.size()][];
+		int i = 0;
+		for (Object[] arr : data)
+		{
+			info[i] = arr;
+			i++;
+		}
+		return info;
+	}
+	
+	private void selected_replace(Object[] data)
+	{
+		for (Object[] info : selected)
+		{
+			if (data[0] == info[0])
+			{
+				selected.remove(info);
+				
+				break;
+			}
+		}
+		selected.add(data);
+	}
+	
+	private void replace_ids_amounts(int[] data)
+	{
+		for(int[] i_a : ids_amounts)
+		{
+			if (i_a[0] == data[0])
+			{
+				ids_amounts.remove(i_a);
+				break;
+			}
+		}
+		ids_amounts.add(data);
+	}
+	
+	private void remove_from_selected_and_ids(int id)
+	{
+
+		for (int[] i : ids_amounts)
+		{
+			if(i[0] == id)
+			{
+				ids_amounts.remove(i);
+				break;
+			}
+		}
+		for (Object[] i : selected)
+		{
+			if((int)i[0] == id)
+			{
+				selected.remove(i);
+				break;
+			}
+		}
+		
+		
+	}
+	
+	private void display_prices()
+	{
+		String c_id = c_id_tf.getText();
+		if(is_number(c_id))
+		{
+			int cust_id = Integer.parseInt(c_id);
+			if(cust_ctr.customer_exists(cust_id))
+			{
+				prices = ord_ctr.calc_order_price(cust_id, ids_amounts, chckbxPaymentOnDelivery.isSelected(), delivery);
+				price_tf.setText(String.valueOf(prices[0]));
+				if (delivery)
+				{
+					d_c_tf.setText(String.valueOf(prices[1]));
+					
+				}
+			}
+			else
+			{
+				prices[0] = 0;
+				prices[1] = 0;
+			}
+		}
+	}
+	
+
+	
+	class AddProduct extends Adder
 	{
 		private String[] column_names = {"ID", "Name", "Price", "Amount"};
 		private Object[][] filling;
 		public AddProduct()
 		{
-			super();
-			refresh_table(prod_ctr.get_non_deleted_products());
+			super(false);
+			this.addWindowListener(new java.awt.event.WindowAdapter() 
+			{
+			    @Override
+			    public void windowClosing(java.awt.event.WindowEvent windowEvent) 
+			    {
+			    	is_open=false;
+			    }
+			});
+			
+			refresh_small(prod_ctr.get_non_deleted_products());
+
 		}
 		
-		private void refresh_table(Object[][] data)
+		private void refresh_small(Object[][] data)
 		{
 			filling = new Object[data.length][4];
 			for(int i = 0; i< data.length; i++)
@@ -561,241 +754,113 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 			}
 			fill_table(filling, column_names);
 		}
-	}
-
-	/*class AddProductUI extends JInternalFrame
-	{
-		private JTextField search_tf;
-		private JTable product_table;
-
-		private String[] column_names = { "Art. number", "Name", "Quantity",
-				"Category", "Amount qualified for discount", "Location",
-				"Price" };
-
-		public AddProductUI()
+		@Override
+		protected void confirm()
 		{
-			super("Add product", true, true, true, true);
-			setBounds(100, 100, 450, 300);
-
-			make_search();
-			make_ctr_btns();
-			make_table();
-
+			is_open = false;
+			this.dispose();
 		}
-
-		private void make_ctr_btns()
+		
+		@Override
+		protected void add_product()
 		{
-			JPanel panel = new JPanel();
-			getContentPane().add(panel, BorderLayout.SOUTH);
-			panel.setLayout(new BorderLayout(0, 0));
-
-			JButton add_btn = new JButton("Add");
-			add_btn.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					add();
-				}
-			});
-			panel.add(add_btn, BorderLayout.WEST);
-
-			JButton cancel_btn = new JButton("Cancel");
-			cancel_btn.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					dispose();
-				}
-			});
-			panel.add(cancel_btn, BorderLayout.EAST);
-		}
-
-		private void make_search()
-		{
-			JPanel panel_1 = new JPanel();
-			getContentPane().add(panel_1, BorderLayout.NORTH);
-			panel_1.setLayout(new BorderLayout(0, 0));
-			JPanel panel_2 = new JPanel();
-			panel_1.add(panel_2, BorderLayout.WEST);
-			panel_2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-
-			JLabel search_lbl = new JLabel("Name/ID");
-			panel_2.add(search_lbl);
-
-			search_tf = new JTextField();
-			panel_2.add(search_tf);
-			search_tf.setColumns(10);
-
-			JButton search_btn = new JButton("Search");
-			search_btn.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					search();
-				}
-			});
-			panel_2.add(search_btn);
-			JButton clear_btn = new JButton("Clear");
-			clear_btn.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					search_tf.setText("");
-					refresh_inner();
-				}
-			});
-			panel_2.add(clear_btn);
-		}
-
-		private void make_table()
-		{
-			JScrollPane scrollPane = new JScrollPane();
-			getContentPane().add(scrollPane, BorderLayout.CENTER);
-
-			final Object[][] filling = prod_ctr.get_all_products();
-
-			product_table = new JTable();
-
-			product_table.setFillsViewportHeight(true);
-			product_table.setModel(new MyTableModel(filling, column_names));
-
-			product_table.setPreferredScrollableViewportSize(new Dimension(500,
-					70));
-			product_table.setAutoCreateRowSorter(true);
-			product_table.setRowSelectionAllowed(true);
-			product_table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			product_table.getColumnModel().getColumn(4).setMinWidth(160);
-			product_table.getTableHeader().setReorderingAllowed(false);
-			product_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
-			product_table.addMouseListener(new MouseAdapter()
-			{
-				@Override
-				public void mouseClicked(MouseEvent e)
-				{
-					if (e.getClickCount() == 2)
-					{
-						add();
-					}
-				}
-			});
-
-			DefaultTableCellRenderer right_renderer = new DefaultTableCellRenderer();
-			right_renderer.setHorizontalAlignment(JLabel.RIGHT);
-			product_table.setDefaultRenderer(String.class, right_renderer);
-
-			JScrollPane scroll_pane = new JScrollPane(product_table);
-			scroll_pane.setBorder(new EmptyBorder(5, 10, 5, 10));
-			getContentPane().add(scroll_pane, BorderLayout.CENTER);
-		}
-
-		private void add()
-		{
-			Object[] data = new Object[2];
-			boolean ok = true;
-			int row_index = product_table.getSelectedRow();
+			int row_index = add_table.getSelectedRow();
 			if (row_index != -1)
 			{
-				if( product_table.getModel().getValueAt(row_index, 0) != null)
+				if( add_table.getModel().getValueAt(row_index, 0) != null)
 				{
-					data[0] = String.valueOf(product_table.getModel().getValueAt(
-							row_index, 0));
-	
-					for (Object[] position : selected)
+					int id = (int)add_table.getModel().getValueAt(row_index, 0);
+					String quantity = JOptionPane
+							.showInputDialog("Please input the amount of the product");
+					if (is_number(quantity))
 					{
-						if (position[0].equals(data[0]))
+						int amount =Integer.parseInt(quantity);
+						if (amount > 0)
 						{
-							selected.remove(position);
-							break;
-						}
-					}
-					if (ok)
-					{
-						String quantity = JOptionPane
-								.showInputDialog("Please input the amount of the product");
-						if (is_numeric(quantity))
-						{
-							int amount =Integer.parseInt(quantity);
-							if (amount > 0)
+							if (prod_ctr.is_such_amount(id, amount))
 							{
-								if (prod_ctr.is_such_amount((int) data[0], amount))
-								{
-									data[1] = Integer.parseInt(quantity);
-									selected.add(data);
-									refresh_inner();
-									refresh_table(selected);
-									//dispose();
-		
-								}
-								else
-								{
-									JOptionPane.showMessageDialog(
-													this,
-													"Couldn't add a product.\nAmount higher than available quantity.",
-													"Error",
-													JOptionPane.INFORMATION_MESSAGE);
-								}
+								int[] data = { id, amount };
+								replace_ids_amounts(data);
+								selected_replace((make_selected(prod_ctr.get_product_by_id(id), amount)));
+								refresh_table(make_filling(selected));
+								display_prices();
 							}
 							else
 							{
-								JOptionPane.showMessageDialog(
-												this,
-												"Couldn't add a product.\nAmount must be greater than 0.",
-												"Error",
-												JOptionPane.INFORMATION_MESSAGE);
+								JOptionPane.showMessageDialog(this, "Amount too high.\nNot enough product in the stock.", "Error", JOptionPane.ERROR_MESSAGE);
 							}
 						}
 						else
 						{
-							JOptionPane.showMessageDialog(
-											this,
-											"Couldn't add a product.\nAmount typed incorrectly.",
-											"Error",
-											JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(this, "Amount cannot be negative.", "Error", JOptionPane.ERROR_MESSAGE);
 						}
-
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(this, "Amount must be a number.", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			}
 		}
-
-		private void search()
+		
+		
+	}
+	
+	class AddCustomer extends Adder
+	{
+		private String[] column_names = { "ID", "Name", "Address", "City", "Discount %", "Price qualified for discount", "Price qualified for free shipment" };
+		private Object[][] filling;
+		public AddCustomer()
 		{
-			Object[][] filling = new Object[1][6];
-			String contents = search_tf.getText();
-			if (is_numeric(contents))
+			super(true);
+			this.addWindowListener(new java.awt.event.WindowAdapter() 
 			{
-				filling[0] = stock_ctr.find_product_by_art_nr(contents, false,
-						false);
-			}
-			else
-			{
-				filling[0] = stock_ctr.find_product_by_name(contents, false,
-						false);
-			}
-			product_table.setModel(new MyTableModel(filling, column_names));
+			    @Override
+			    public void windowClosing(java.awt.event.WindowEvent windowEvent) 
+			    {
+			    	is_open=false;
+			    }
+			});
+			
+			refresh_small(cust_ctr.get_non_deleted_customers());
 		}
 		
-		private void refresh_inner()
+		
+		private void refresh_small(Object[][] data)
 		{
-			Object[][] filling = stock_ctr.display_all_products();
-			product_table.setModel(new MyTableModel(filling, column_names));
-			product_table.getColumnModel().getColumn(4).setMinWidth(180);
+			filling = new Object[data.length][7];
+			for(int i = 0; i< data.length; i++)
+			{
+				filling[i][0] = data[i][0];
+				filling[i][1] = data[i][1];
+				filling[i][2] = data[i][2];
+				filling[i][3] = data[i][4];
+				filling[i][4] = data[i][9];
+				filling[i][5] = data[i][10];
+				filling[i][6] = data[i][11];
+			}
+			fill_table(filling, column_names);
 		}
-
-		private boolean is_numeric(String checker)
+		
+		@Override
+		protected void select_customer()
 		{
-			try
+			int row_index = add_table.getSelectedRow();
+			if (row_index != -1)
 			{
-				int i = Integer.parseInt(checker);
+				if( add_table.getModel().getValueAt(row_index, 0) != null)
+				{
+					c_id_tf.setText(String.valueOf(add_table.getModel().getValueAt(row_index, 0)));
+					is_open = false;
+					this.dispose();
+				}
 			}
-			catch (NumberFormatException nfe)
-			{
-				return false;
-			}
-			return true;
 		}
-
-	}*/
-
+		@Override
+		protected void confirm()
+		{
+			select_customer();
+		}
+	}
+	
 }

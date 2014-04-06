@@ -132,7 +132,7 @@ public class Order
 		}
 		if(total_price > price_qual_for_disc && disc_perc != -1)
 		{
-			total_price *= disc_perc;
+			total_price *= (1- disc_perc);
 		}
 		
 		if(delivery != null)
