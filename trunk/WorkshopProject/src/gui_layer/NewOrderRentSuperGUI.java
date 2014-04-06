@@ -172,6 +172,13 @@ abstract public class NewOrderRentSuperGUI extends JFrame {
 		
 		
 		btn_cancel = new JButton("Cancel");
+		btn_cancel.addMouseListener(new MouseAdapter()
+		{
+			public void mouseClicked(MouseEvent arg2)
+			{
+				cancel();
+			}
+		});
 		panel_2.add(btn_cancel);
 		
 	}
@@ -228,6 +235,8 @@ abstract public class NewOrderRentSuperGUI extends JFrame {
 	abstract protected void add();
 	
 	abstract protected void delete();
+	
+	abstract protected void cancel();
 	
 	
 	

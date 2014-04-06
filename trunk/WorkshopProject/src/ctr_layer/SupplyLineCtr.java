@@ -116,7 +116,7 @@ public class SupplyLineCtr
 	
 	public boolean is_such_amount(int product_id, int amount)
 	{
-		return find_product(product_id, false).getAmount() > amount;
+		return find_product(product_id, false).getAmount() >= amount;
 	}
 	
 	public boolean subtract_amount(int product_id, int amount)
