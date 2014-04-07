@@ -316,18 +316,45 @@ public class CustomerType extends SuperGUI {
 			{
 				System.out.println("Error while parsing id for editing: " + e);
 			}
-			float disc_price = Float.parseFloat(tf_disc_price.getText());
-			float free_ship = Float.parseFloat(tf_free_ship.getText());
-			float disc_perc = Float.parseFloat(tf_disc_perc.getText());
+			float disc_price;
+			float free_ship;
+			float disc_perc;
+			if((tf_disc_price.getText().equals("Price for Discount"))||(tf_disc_price.getText().equals("")))
+			{
+				disc_price = -1;
+			}
+			else
+			{
+				disc_price = Float.parseFloat(tf_disc_price.getText());
+			}
+			if((tf_free_ship.getText().equals("Price for Free Shipping"))||(tf_free_ship.getText().equals("")))
+			{
+				free_ship = -1;
+			}
+			else
+			{
+				free_ship = Float.parseFloat(tf_free_ship.getText());
+			}
+			if((tf_disc_perc.getText().equals("Discount %"))||(tf_disc_perc.getText().equals("")))
+			{
+				disc_perc = 0;
+			}
+			else
+			{
+				disc_perc = Float.parseFloat(tf_disc_perc.getText());
+			}
+			
+			
+			
 			if (id==-1)
 			{
 				types.add_customer_type(disc_price, free_ship, disc_perc);
-				JOptionPane.showMessageDialog(this, "Successully created a customer.", "Success", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Successully created a customer type.", "Success", JOptionPane.INFORMATION_MESSAGE);
 			}
 			else
 			{
 				types.update_customer_type(id, disc_price, free_ship, disc_perc);
-				JOptionPane.showMessageDialog(this, "Successully edited a customer.", "Success", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Successully edited a customer type.", "Success", JOptionPane.INFORMATION_MESSAGE);
 			}
 			clear();
 			
@@ -336,19 +363,19 @@ public class CustomerType extends SuperGUI {
 	private boolean is_ready()
 	{
 		boolean is_ready=true;
-		if ((tf_disc_price.getText().equals("Price for Discount"))||(tf_disc_price.getText().equals(""))||(!is_float(tf_disc_price.getText())))
+		if ((!is_float(tf_disc_price.getText()) && !(tf_disc_price.getText().equals("Price for Discount"))||(tf_disc_price.getText().equals(""))))
 		{
 			tf_disc_price.setBackground(Color.red);
 			tf_disc_price.setText("Not Valid");
 			is_ready=false;
 		}
-		if ((tf_free_ship.getText().equals("Price for Free Shipping"))||(tf_free_ship.getText().equals(""))||(!is_float(tf_free_ship.getText())))
+		if ((!is_float(tf_free_ship.getText()) && !(tf_free_ship.getText().equals("Price for Free Shipping"))||(tf_free_ship.getText().equals(""))))
 		{
 			tf_free_ship.setBackground(Color.red);
 			tf_free_ship.setText("Not valid");
 			is_ready=false;
 		}
-		if ((tf_disc_perc.getText().equals("Discount %"))||(tf_disc_perc.getText().equals(""))||(!is_float(tf_disc_perc.getText())))
+		if ((!is_float(tf_disc_perc.getText()) && !(tf_disc_perc.getText().equals("Discount %"))||(tf_disc_perc.getText().equals(""))))
 		{
 			tf_disc_perc.setBackground(Color.red);
 			tf_disc_perc.setText("Not valid");

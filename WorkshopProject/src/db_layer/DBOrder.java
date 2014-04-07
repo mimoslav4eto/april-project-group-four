@@ -48,7 +48,7 @@ public class DBOrder
 		
 		int rc = -2;
 		float total_price = ord.getTotal_price();
-		int invoice_nr = ord.getInvoice_nr();
+		
 		Date payment_date = new Date(ord.getPayment_date().getTime());
 		Customer cust = ord.getCustomer();
 		Delivery del = ord.getDelivery();
@@ -63,6 +63,7 @@ public class DBOrder
 				del.setId(db_d.insert_delivery(del));
 			}
 			int id = UtilityFunctions.get_max_id("SELECT max(sale_id) FROM Sale") + 1;
+			int invoice_nr = UtilityFunctions.get_max_id("SELECT max(invoice_nr) FROM Sale") + 1;
 			System.out.println("Order to be inserted: " + id);
 			PreparedStatement stmt = UtilityFunctions.make_insert_statement(con, "Sale", "sale_id, price, payment_date, invoice_nr, customer_id, delivery_id, complete");
 			stmt.setInt(1, id);

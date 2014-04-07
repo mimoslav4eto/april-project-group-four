@@ -58,7 +58,7 @@ public class CustomerCtr
 		return make_types_array(find_all_customer_types());
 	}
 	
-	public boolean add_customer(String name, String phone_nr, String email,
+	public int add_customer(String name, String phone_nr, String email,
 			String address, String zipcode, String city, String preferences, int type_id)
 	{
 		CustomerType ct = find_customer_type(type_id);
@@ -66,10 +66,11 @@ public class CustomerCtr
 		int key = db.insert_customer(cust);
 		if( key !=-1)
 		{
+			cust.setId(key);
 			all_customers.put(key, cust);
-			return true;
+			return key;
 		}
-		return false;
+		return -1;
 		
 	}
 	

@@ -252,7 +252,7 @@ public class OrderCtr
 	
 	private Object[][] make_orders_array(ArrayList<Order> orders)
 	{
-		Object[][] data = new Object[orders.size()][11];
+		Object[][] data = new Object[orders.size()][10];
 		int i = 0;
 		for (Order order : orders)
 		{

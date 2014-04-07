@@ -165,6 +165,7 @@ public class SupplyLineCtr
 		System.out.println("supplied_by");
 		if (key != -1)
 		{
+			prod.setId(key);
 			all_products.put(key, prod);
 			return key;
 		}

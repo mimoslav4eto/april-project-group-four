@@ -385,6 +385,11 @@ public class Products extends SuperGUI {
 		}
 		
 		p.setVisible(true);
+		getDesktopPane().add(p);
+		try 
+		{
+	        p.setSelected(true);
+	    } catch (java.beans.PropertyVetoException pve) {}
 	}
 	private void clear_fields()
 	{
@@ -805,6 +810,11 @@ class Supp extends SuperGUI {
 	{
 			Choose p = new Choose(this);
 			p.setVisible(true);
+			getDesktopPane().add(p);
+			try 
+			{
+		        p.setSelected(true);
+		    } catch (java.beans.PropertyVetoException pve) {}
 	}
 	private void remove()
 	{

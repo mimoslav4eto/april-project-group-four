@@ -200,7 +200,7 @@ public class MainMenu extends JFrame
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				NewOrderGUI frame = new NewOrderGUI(false,0);
+				NewOrderGUI frame = new NewOrderGUI(true,-1);
 				set_location();
 				frame.setLocation(position[0]+3, position[1]+3);
 				desktopPane.add(frame);

@@ -373,6 +373,11 @@ public class NewRentGUI extends NewOrderRentSuperGUI
 						is_open = true;
 						AddCustomer ac = new AddCustomer();
 						ac.setVisible(true);
+						getDesktopPane().add(ac);
+						try 
+						{
+					        ac.setSelected(true);
+					    } catch (java.beans.PropertyVetoException pve) {}
 						
 					}
 				}
@@ -585,6 +590,11 @@ public class NewRentGUI extends NewOrderRentSuperGUI
 			AddProduct a = new AddProduct();
 			
 			a.setVisible(true);
+			getDesktopPane().add(a);
+			try 
+			{
+		        a.setSelected(true);
+		    } catch (java.beans.PropertyVetoException pve) {}
 			is_open = true;
 		}
 	}

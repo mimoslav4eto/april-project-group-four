@@ -429,6 +429,11 @@ public class Customer extends SuperGUI {
 	{
 		Table p=new Table(this);
 		p.setVisible(true);
+		getDesktopPane().add(p);
+		try 
+		{
+	        p.setSelected(true);
+	    } catch (java.beans.PropertyVetoException pve) {}
 	}
 	private void clear_fields()
 	{
@@ -535,15 +540,13 @@ public class Customer extends SuperGUI {
 			String preferences = txt_pref.getText();
 			if (id==-1)
 			{
-				customers.add_customer(name, phone_nr, email, address, zipcode, city, preferences, type_id);
+				id = customers.add_customer(name, phone_nr, email, address, zipcode, city, preferences, type_id);
 				JOptionPane.showMessageDialog(this, "Successully created a customer.", "Success", JOptionPane.INFORMATION_MESSAGE);
-				clear();
 			}
 			else
 			{
 				customers.update_customer(id, name, phone_nr, email, address, zipcode, city, preferences, type_id);
 				JOptionPane.showMessageDialog(this, "Successully edited a customer.", "Success", JOptionPane.INFORMATION_MESSAGE);
-				clear();
 			}
 			clear();
 			
