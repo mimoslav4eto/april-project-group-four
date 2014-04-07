@@ -243,7 +243,7 @@ public class DBRent
 		{
 			rent = new Rent();
 			rent.setCustomer(db_c.find_customer(results.getInt("customer_id")));
-			rent.setDelivery(db_d.find_delivery(results.getInt("delivery_id")));
+			
 			
 			rent.setRent_id(results.getInt("rent_id"));
 			rent.setRent_price(results.getFloat("rent_price"));
@@ -255,6 +255,7 @@ public class DBRent
 			date = new java.util.Date();
 			date.setTime(results.getDate("return_date").getTime());
 			rent.setReturn_date(date);
+			rent.setDelivery(db_d.find_delivery(results.getInt("delivery_id")));
 			
 		}
 		catch(SQLException se)

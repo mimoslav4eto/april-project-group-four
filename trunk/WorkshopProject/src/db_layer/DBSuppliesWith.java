@@ -96,8 +96,9 @@ public class DBSuppliesWith
 			stmt.setInt(2, s_id);
 			stmt.setQueryTimeout(5);
 			ResultSet results = stmt.executeQuery();
+			boolean exists = results.next();
 			stmt.close();
-			return results.next();
+			return exists;
 		}
 		catch(SQLException se)
 		{
