@@ -47,5 +47,25 @@ public class Utilities
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		return sdf.format(date);
 	}
+	
+	public static long day_difference(String begin, String end)
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		try
+		{
+			Date begin_date = sdf.parse(begin);
+			Date end_date = sdf.parse(end);
+			long difference = (end_date.getTime() - begin_date.getTime()) / (1000*60*60*24);
+			if(difference < 0)
+			{
+				return 0;
+			}
+			return difference;
+		}
+		catch(ParseException e)
+		{
+			return 0;
+		}
+	}
 
 }
