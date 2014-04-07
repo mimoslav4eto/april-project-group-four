@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -30,7 +31,7 @@ import javax.swing.ListSelectionModel;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
 
-public class SuperGUI extends JFrame {
+public class SuperGUI extends JInternalFrame {
 
 	protected JPanel contentPane;
 	protected JTextField field_search;
@@ -45,29 +46,12 @@ public class SuperGUI extends JFrame {
 	public JButton btn_delete;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					SuperGUI frame = new SuperGUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
 	public SuperGUI() {
+		super("", true, true, true, true);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 570, 387);
+		setSize(570, 387);
 		contentPane = new JPanel();
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));

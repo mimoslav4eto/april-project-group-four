@@ -6,7 +6,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-
 import java.awt.Toolkit;
 
 import javax.swing.JButton;
@@ -18,6 +17,8 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 
 import java.awt.FlowLayout;
 import java.awt.event.FocusAdapter;
@@ -59,24 +60,6 @@ public class Customer extends SuperGUI {
 	private Dimension dim;
 	private JPanel panel_5;
 	private JButton btn_ok;
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args)
-	{
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					Customer frame = new Customer();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.
@@ -732,11 +715,47 @@ class Table extends SuperGUI {
 			}
 		});
 		
-		this.addWindowListener(new java.awt.event.WindowAdapter() {
-		    @Override
-		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		    	is_opened=false;
-		    }
+		this.addInternalFrameListener(new InternalFrameListener() {
+
+			public void internalFrameClosing(InternalFrameEvent arg0) {
+				is_opened=false;
+			}
+
+			@Override
+			public void internalFrameActivated(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameClosed(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameDeactivated(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameDeiconified(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameIconified(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameOpened(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 		btn_choose=new JButton("Choose");
 		search_panel.add(btn_choose,BorderLayout.EAST);

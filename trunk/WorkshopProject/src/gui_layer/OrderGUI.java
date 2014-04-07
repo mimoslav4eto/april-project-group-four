@@ -56,22 +56,6 @@ public class OrderGUI extends OrderRentSuperGUI
 	private JPanel panel_11;
 	private JPanel panel_12;
 	private JPanel panel_13;
-	
-	
-	public static void main(String[] args)
-	{
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					OrderGUI frame = new OrderGUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	public OrderGUI()
 	{

@@ -17,6 +17,8 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 
 import java.awt.FlowLayout;
 import java.awt.event.FocusAdapter;
@@ -57,25 +59,9 @@ public class Products extends SuperGUI {
 	private JPanel panel_4;
 	private boolean is_opened;
 	private boolean is_editable;
-	private Dimension dim;
 	private JPanel panel_5;
 	private JButton btn_ok;
 	private ArrayList<Integer> supplier_ids;
-	
-	public static void main(String[] args)
-	{
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					Products p = new Products();
-					p.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.
@@ -118,8 +104,6 @@ public class Products extends SuperGUI {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		is_opened=false;
 		products=new SupplyLineCtr();
-		dim= Toolkit.getDefaultToolkit().getScreenSize();
-		setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 		make_manager();
 		Object[][] temp=products.get_all_products();
 		refill_table(temp);
@@ -681,11 +665,48 @@ class Supp extends SuperGUI {
 			}
 		});
 		
-		this.addWindowListener(new java.awt.event.WindowAdapter() {
-		    @Override
-		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		    	is_opened=false;
-		    }
+
+		this.addInternalFrameListener(new InternalFrameListener() {
+
+			public void internalFrameClosing(InternalFrameEvent arg0) {
+				is_opened=false;
+			}
+
+			@Override
+			public void internalFrameActivated(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameClosed(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameDeactivated(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameDeiconified(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameIconified(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameOpened(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 		btn_panel= new JPanel();
 		search_panel.add(btn_panel,BorderLayout.EAST);
@@ -849,11 +870,47 @@ class Choose extends SuperGUI {
 			}
 		});
 		
-		this.addWindowListener(new java.awt.event.WindowAdapter() {
-		    @Override
-		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		    	is_opened=false;
-		    }
+		this.addInternalFrameListener(new InternalFrameListener() {
+
+			public void internalFrameClosing(InternalFrameEvent arg0) {
+				is_opened=false;
+			}
+
+			@Override
+			public void internalFrameActivated(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameClosed(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameDeactivated(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameDeiconified(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameIconified(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void internalFrameOpened(InternalFrameEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 		btn_panel= new JPanel();
 		search_panel.add(btn_panel,BorderLayout.EAST);
