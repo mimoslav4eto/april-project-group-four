@@ -11,10 +11,12 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextField;
 
+import model_layer.Supplier;
 import ctr_layer.CustomerCtr;
 import ctr_layer.OrderCtr;
 import ctr_layer.RentCtr;
 import ctr_layer.SupplyLineCtr;
+import db_layer.DBProduct;
 
 public class UselessShitForTesting extends JFrame
 {
@@ -83,10 +85,14 @@ public class UselessShitForTesting extends JFrame
 		Date date = new Date();
 		Date next_day = new Date();
 		next_day.setTime(date.getTime() + 24*60*60*1000);
+		DBProduct db_p = new DBProduct();
 		
-		
-		
-		
+		ArrayList<Supplier> sups = db_p.find_product(5, true).getSupplied_by();
+		for(Supplier sup : sups)
+		{
+			System.out.println(sup.getId());
+		}
+
 		/*System.out.println(rc.add_rent_with_del(13, true, date, date, next_day, ids_amounts));
 		System.out.println(cc.add_customer("Bob", null, null, "sfsgs", "DK9000", "Aalborg", null, 1));
 		System.out.println(cc.add_customer("John", "ewrwerwre", null, "sfsfsf", "DK9220", "Aalborg", null, 1));
@@ -95,16 +101,16 @@ public class UselessShitForTesting extends JFrame
 //		textField.setText("Adding supplier successfull: " + String.valueOf(slc.add_supplier("John", "223322", "email", "address", "DJ9234", "city", "reg45353", null, "France")));
 //		textField_1.setText("Updating product successfull: " + String.valueOf(slc.update_product_amount(4, 654)));
 //		textField_2.setText("Finding product: 1 " + String.valueOf(slc.supplier_exists(28) && slc.product_exists(1)));
-		LinkedList<int[]> ids_amounts = new LinkedList<int[]>();
+		/*LinkedList<int[]> ids_amounts = new LinkedList<int[]>();
 		for (int i = 1; i <= 11; i++)
 		{
 			int[] data = {i, i*5};
 			ids_amounts.add(data);
-		}
+		}*/
 		
-		textField.setText(String.valueOf(rc.add_rent_with_del(14, true, "08/04/2014", "03/04/2014", "04/04/2014", ids_amounts)));
+		//textField.setText(String.valueOf(rc.add_rent_with_del(14, true, "08/04/2014", "03/04/2014", "04/04/2014", ids_amounts)));
 		//textField_1.setText(String.valueOf(rc.add_rent_without_del(15, "03/04/2001", "04/04/2001", ids_amounts)));
-		rc.get_rent(1);
+		//rc.get_rent(1);
 		//rc.get_all_rents();
 		//textField_2.setText(String.valueOf(oc.order_exists(4)));
 		//slc.add_product("assa", 54f, 32f, 23f, 12, 22, -1);

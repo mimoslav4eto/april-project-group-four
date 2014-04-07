@@ -139,7 +139,7 @@ public class SupplyLineCtr
 		return find_supplier(supplier_id, false) != null;
 	}
 	
-	public boolean add_product(String name, float retail_price, Float price, Float rent_price, int min_amount,
+	public int add_product(String name, float retail_price, Float price, Float rent_price, int min_amount,
 			int amount, int supplier_id)
 	{
 		Product prod = new Product(name, retail_price, price, rent_price, min_amount, amount, false);
@@ -166,9 +166,9 @@ public class SupplyLineCtr
 		if (key != -1)
 		{
 			all_products.put(key, prod);
-			return true;
+			return key;
 		}
-		return false;
+		return -1;
 	}
 	
 	public boolean add_supplier(String name, String phone_nr, String email, String address, String zipcode, String city,String cVR, String description, String country)
@@ -215,6 +215,45 @@ public class SupplyLineCtr
 		prod.setDeleted(true);
 		prod.setAmount(0);
 		if(db_p.update_product(prod) == 1)
+		{
+			all_products.put(product_id, prod);
+			return true;
+		}
+		return false;
+	}
+	
+	public float calculate_ord_cost(int id, int amount)
+	{
+		return find_product(id, false).getPrice()*amount;
+	}
+	
+	public float calculate_rent_cost(int id, int amount, int days)
+	{
+		return find_product(id, false).getRent_price()*amount*days;
+	}
+	
+	public boolean is_such_amount(int product_id, int amount)
+	{
+		return find_product(product_id, false).getAmount() >= amount;
+	}
+	
+	public boolean subtract_amount(int product_id, int amount)
+	{
+		Product prod = find_product(product_id, false);
+		prod.setAmount(prod.getAmount()-amount);
+		if (db_p.update_product(prod) == 1)
+		{
+			all_products.put(product_id, prod);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean increase_amount(int product_id, int amount)
+	{
+		Product prod = find_product(product_id, false);
+		prod.setAmount(prod.getAmount()+amount);
+		if (db_p.update_product(prod) == 1)
 		{
 			all_products.put(product_id, prod);
 			return true;
@@ -297,6 +336,11 @@ public class SupplyLineCtr
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean relation_exists(int p_id, int s_id)
+	{
+		return db_sw.relation_exists(p_id, s_id);
 	}
 	
 	private Product find_product(int product_id, boolean make_association)
@@ -459,11 +503,10 @@ public class SupplyLineCtr
 	private ArrayList<Integer> make_suppliers_array_ids(ArrayList<Supplier> suppliers)
 	{
 		ArrayList<Integer> data = new ArrayList<>();
-		int i = 0;
+
 		for(Supplier supplier : suppliers)
 		{
 			data.add(supplier.getId());
-			i++;
 		}
 		return data;
 	}

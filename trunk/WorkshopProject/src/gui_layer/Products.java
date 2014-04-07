@@ -356,7 +356,7 @@ public class Products extends SuperGUI {
 					is_opened=true;
 					if (!is_number(tf_id.getText()))
 					{
-						supplier_ids=products.get_all_suppliers_ids();
+						supplier_ids= new ArrayList<Integer>();
 					}
 					else
 					{
@@ -496,27 +496,29 @@ public class Products extends SuperGUI {
 			int amount = Integer.parseInt(tf_amount.getText());
 			if (id==-1)
 			{
-				int temp_count=0;
-				products.add_product(name, retail_price, price, rent_price, minimum_amount, amount,supplier_ids.get(0));
-				supplier_ids.remove(0);
-				Object[][] prod=products.get_products_by_name(name);
-				for (int i=0;i<prod.length;i++)
+				int sup_id = -1;
+				if(!supplier_ids.isEmpty())
 				{
-					if (id==Integer.parseInt(String.valueOf(prod[i][0])))
-					{
-						temp_count=i;
-						break;
-					}
+					sup_id = supplier_ids.remove(0);
 				}
+				id = products.add_product(name, retail_price, price, rent_price, minimum_amount, amount, sup_id);
 				for (int s_i:supplier_ids)
 				{
-				products.insert_product_supplier_relation(temp_count, s_i);
+					products.insert_product_supplier_relation(id, s_i);
 				}
 				supplier_ids.clear();
 				JOptionPane.showMessageDialog(this, "Successully created a product.", "Success", JOptionPane.INFORMATION_MESSAGE);
 			}
 			else
 			{
+				for (int s_i:supplier_ids)
+				{
+					if(!products.relation_exists(id, s_i))
+					{
+						products.insert_product_supplier_relation(id, s_i);
+					}
+				}
+				supplier_ids.clear();
 				products.update_product(id, name, retail_price, price, rent_price, minimum_amount, amount);
 				JOptionPane.showMessageDialog(this, "Successully edited a product.", "Success", JOptionPane.INFORMATION_MESSAGE);
 			}
@@ -671,8 +673,11 @@ class Supp extends SuperGUI {
 		{
 			public void mouseClicked(MouseEvent e)
 			{
-				if (e.getClickCount()==2)
-				choose();
+				if(is_editable)
+				{
+					if (e.getClickCount()==2)
+					choose();
+				}
 			}
 		});
 		
@@ -751,8 +756,8 @@ class Supp extends SuperGUI {
 				
 				fill[i][0]=temp[i][0];
 				fill[i][1]=temp[i][1];
-				fill[i][2]=temp[i][3];
-				fill[i][3]=temp[i][4];
+				fill[i][2]=temp[i][7];
+				fill[i][3]=temp[i][5];
 			}
 			fill_table(fill,column_names);
 		}
@@ -890,8 +895,8 @@ class Choose extends SuperGUI {
 				
 				filling[i][0]=temp[i][0];
 				filling[i][1]=temp[i][1];
-				filling[i][2]=temp[i][3];
-				filling[i][3]=temp[i][4];
+				filling[i][2]=temp[i][7];
+				filling[i][3]=temp[i][5];
 			}
 			fill_table(filling,column_names);
 		}

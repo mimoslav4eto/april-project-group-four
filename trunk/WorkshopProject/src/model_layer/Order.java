@@ -20,12 +20,11 @@ public class Order
 	
 
 	public Order(Customer customer, Date payment_date,
-			int invoice_nr, ArrayList<SaleLineItem> items, boolean complete)
+			 ArrayList<SaleLineItem> items, boolean complete)
 	{
 		this.customer = customer;
 		delivery = null;
 		this.payment_date = payment_date;
-		this.invoice_nr = invoice_nr;
 		this.items = items;
 		this.complete = complete;
 		calculate_price(customer.getCust_type().getDisc_perc(), customer.getCust_type().getPrice_qual_for_disc());
@@ -133,7 +132,7 @@ public class Order
 		}
 		if(total_price > price_qual_for_disc && disc_perc != -1)
 		{
-			total_price *= disc_perc;
+			total_price *= (1- disc_perc);
 		}
 		
 		if(delivery != null)
