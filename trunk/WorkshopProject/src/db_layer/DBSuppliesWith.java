@@ -74,7 +74,7 @@ public class DBSuppliesWith
 		System.out.println("Deleting product-supplier relation: " + p_id + "|" + s_id);
 		try
 		{
-			PreparedStatement ps = con.prepareStatement("DELETE FROM Supplies WHERE p_id = ? AND s_id = ?");
+			PreparedStatement ps = con.prepareStatement("DELETE FROM Supplies WHERE product_id = ? AND supplier_id = ?");
 			ps.setInt(1, p_id);
 			ps.setInt(2, s_id);
 			ps.setQueryTimeout(5);

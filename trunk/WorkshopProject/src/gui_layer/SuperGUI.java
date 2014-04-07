@@ -26,20 +26,23 @@ import java.awt.Font;
 import java.awt.Dimension;
 
 import javax.swing.ListSelectionModel;
+
 import java.awt.FlowLayout;
+import java.util.ArrayList;
 
 public class SuperGUI extends JFrame {
 
 	protected JPanel contentPane;
 	protected JTextField field_search;
 	private JPanel panel_2;
-	private JPanel search_panel;
+	protected JPanel search_panel;
 	protected JPanel button_panel;
 	private JPanel panel_1; 
 	private JScrollPane scrollPane;
 	protected JTable table;
 	private String[] column_names = {};
 	private Object[][] filling;
+	public JButton btn_delete;
 
 	/**
 	 * Launch the application.
@@ -68,7 +71,6 @@ public class SuperGUI extends JFrame {
 		contentPane = new JPanel();
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
-		
 		search_panel = new JPanel();
 		contentPane.add(search_panel, BorderLayout.NORTH);
 		search_panel.setLayout(new BorderLayout(0, 0));
@@ -155,7 +157,7 @@ public class SuperGUI extends JFrame {
 		});
 		panel_2.add(btn_edit);
 		
-		JButton btn_delete = new JButton("Delete");
+		btn_delete = new JButton("Delete");
 		btn_delete.addMouseListener(new MouseAdapter()
 		{
 			public void mouseClicked(MouseEvent arg4)
@@ -250,6 +252,19 @@ public class SuperGUI extends JFrame {
 		try
 		{
 			int i = Integer.parseInt(temp);
+		}
+		catch (NumberFormatException nfe)
+		{
+			return false;
+		}
+		return true;
+	}
+	protected boolean is_float(String temp)
+	{
+
+		try
+		{
+			float i = Float.parseFloat(temp);
 		}
 		catch (NumberFormatException nfe)
 		{
