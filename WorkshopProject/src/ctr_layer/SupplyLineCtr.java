@@ -83,6 +83,22 @@ public class SupplyLineCtr
 		return make_suppliers_array(find_all_suppliers(false));
 	}
 	
+	public ArrayList<Integer> get_all_suppliers_ids()
+	{
+		return make_suppliers_array_ids(find_all_suppliers(false));
+	}
+	
+	public Object[][] get_suppliers_by_ids(ArrayList<Integer> temp)
+	{
+		Object[][] data = new Object[temp.size()][4];
+		int i=0;
+		for (int spl_id:temp)
+		{
+			data[i]=get_supplier_by_id(spl_id);
+			i++;
+		}
+		return data;
+	}
 	public Object[][] get_suppliers_of(int product_id)
 	{
 		Product prod = find_product(product_id, true);
@@ -93,6 +109,15 @@ public class SupplyLineCtr
 		return null;
 		
 	}
+	public ArrayList<Integer> get_suppliers_ids_of(int product_id)
+	{
+		Product prod = find_product(product_id, true);
+		if (prod != null)
+		{
+			return make_suppliers_array_ids(prod.getSupplied_by());
+		}
+		return null;
+	}
 	
 	public Object[][] get_products_supplied_by(int supplier_id)
 	{
@@ -102,45 +127,6 @@ public class SupplyLineCtr
 			return make_products_array(t_sup.getSupplies_with());
 		}
 		return null;
-	}
-	
-	public float calculate_ord_cost(int id, int amount)
-	{
-		return find_product(id, false).getPrice()*amount;
-	}
-	
-	public float calculate_rent_cost(int id, int amount, int days)
-	{
-		return find_product(id, false).getRent_price()*amount*days;
-	}
-	
-	public boolean is_such_amount(int product_id, int amount)
-	{
-		return find_product(product_id, false).getAmount() >= amount;
-	}
-	
-	public boolean subtract_amount(int product_id, int amount)
-	{
-		Product prod = find_product(product_id, false);
-		prod.setAmount(prod.getAmount()-amount);
-		if (db_p.update_product(prod) == 1)
-		{
-			all_products.put(product_id, prod);
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean increase_amount(int product_id, int amount)
-	{
-		Product prod = find_product(product_id, false);
-		prod.setAmount(prod.getAmount()+amount);
-		if (db_p.update_product(prod) == 1)
-		{
-			all_products.put(product_id, prod);
-			return true;
-		}
-		return false;
 	}
 	
 	public boolean product_exists(int product_id)
@@ -176,6 +162,7 @@ public class SupplyLineCtr
 			prod.setSupplied_by(supplied_by);
 		}
 		int key = db_p.insert_product(prod);
+		System.out.println("supplied_by");
 		if (key != -1)
 		{
 			all_products.put(key, prod);
@@ -257,7 +244,21 @@ public class SupplyLineCtr
 	{
 		Product prod = find_product(p_id, true);
 		Supplier s = find_supplier(s_id, false);
-		
+		try
+		{
+			Object [][] suppliers= get_suppliers_of(prod.getId());	
+			for (int i=0;i<suppliers.length;i++)
+			{
+				if (suppliers[i][0].equals(s_id))
+				{
+					return false;	
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			
+		}
 		if(db_sw.insert_relation(prod, sup) == 1)
 		{
 			prod.getSupplied_by().add(s);
@@ -450,6 +451,18 @@ public class SupplyLineCtr
 		for(Supplier supplier : suppliers)
 		{
 			data[i] = make_supplier_array(supplier);
+			i++;
+		}
+		return data;
+	}
+	
+	private ArrayList<Integer> make_suppliers_array_ids(ArrayList<Supplier> suppliers)
+	{
+		ArrayList<Integer> data = new ArrayList<>();
+		int i = 0;
+		for(Supplier supplier : suppliers)
+		{
+			data.add(supplier.getId());
 			i++;
 		}
 		return data;

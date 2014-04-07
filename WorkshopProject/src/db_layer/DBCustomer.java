@@ -55,7 +55,7 @@ public class DBCustomer
 		String email = cust.getEmail();
 		String zipcode = cust.getZipcode();
 		String city = cust.getCity();
-		String  phone_nr = cust.getPhone_nr();
+		String phone_nr = cust.getPhone_nr();
 		String preferences = cust.getPreferences();
 		String address = cust.getAddress();
 		int t_id = cust.getCust_type().getId();
