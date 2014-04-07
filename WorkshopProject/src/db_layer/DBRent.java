@@ -162,9 +162,7 @@ public class DBRent
 			results = stmt.executeQuery();
 			if(results.next())
 			{
-				
 				rent = create_rent(results);
-				
 				if (make_association)
 				{
 					query = make_item_query();
@@ -238,27 +236,25 @@ public class DBRent
 	
 	private Rent create_rent(ResultSet results)
 	{
-		
 		Rent rent = null;
 		DBCustomer db_c = new DBCustomer();
 		DBDelivery db_d = new DBDelivery();
 		try
 		{
 			rent = new Rent();
-			
 			rent.setCustomer(db_c.find_customer(results.getInt("customer_id")));
+			rent.setDelivery(db_d.find_delivery(results.getInt("delivery_id")));
+			
 			rent.setRent_id(results.getInt("rent_id"));
 			rent.setRent_price(results.getFloat("rent_price"));
 			rent.setComplete(results.getInt("complete") == 1);
 			
 			java.util.Date date = new java.util.Date();
 			date.setTime(results.getDate("date").getTime());
-			
 			rent.setDate(date);
 			date = new java.util.Date();
 			date.setTime(results.getDate("return_date").getTime());
 			rent.setReturn_date(date);
-			rent.setDelivery(db_d.find_delivery(results.getInt("delivery_id")));
 			
 		}
 		catch(SQLException se)
