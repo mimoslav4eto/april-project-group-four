@@ -51,6 +51,8 @@ import java.util.LinkedList;
 
 import javax.swing.border.TitledBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.JButton;
 
@@ -97,7 +99,6 @@ public class NewRentGUI extends NewOrderRentSuperGUI
 			refresh_table(rent_ctr.get_rent_items(id));
 		}
 		
-		// TODO Auto-generated constructor stub
 	}
 	
 	private void make_data_display()
@@ -745,13 +746,48 @@ public class NewRentGUI extends NewOrderRentSuperGUI
 		public AddProduct()
 		{
 			super(false);
-			this.addWindowListener(new java.awt.event.WindowAdapter() 
-			{
-			    @Override
-			    public void windowClosing(java.awt.event.WindowEvent windowEvent) 
-			    {
-			    	is_open=false;
-			    }
+
+			this.addInternalFrameListener(new InternalFrameListener() {
+
+				public void internalFrameClosing(InternalFrameEvent arg0) {
+					is_open=false;
+				}
+
+				@Override
+				public void internalFrameActivated(InternalFrameEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void internalFrameClosed(InternalFrameEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void internalFrameDeactivated(InternalFrameEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void internalFrameDeiconified(InternalFrameEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void internalFrameIconified(InternalFrameEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void internalFrameOpened(InternalFrameEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
 			});
 			
 			refresh_small(prod_ctr.get_non_deleted_products());
@@ -873,13 +909,48 @@ public class NewRentGUI extends NewOrderRentSuperGUI
 		public AddCustomer()
 		{
 			super(true);
-			this.addWindowListener(new java.awt.event.WindowAdapter() 
-			{
-			    @Override
-			    public void windowClosing(java.awt.event.WindowEvent windowEvent) 
-			    {
-			    	is_open=false;
-			    }
+
+			this.addInternalFrameListener(new InternalFrameListener() {
+
+				public void internalFrameClosing(InternalFrameEvent arg0) {
+					is_open=false;
+				}
+
+				@Override
+				public void internalFrameActivated(InternalFrameEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void internalFrameClosed(InternalFrameEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void internalFrameDeactivated(InternalFrameEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void internalFrameDeiconified(InternalFrameEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void internalFrameIconified(InternalFrameEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void internalFrameOpened(InternalFrameEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
 			});
 			
 			refresh_small(cust_ctr.get_non_deleted_customers());

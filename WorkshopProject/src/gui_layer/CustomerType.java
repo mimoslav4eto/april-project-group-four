@@ -52,24 +52,6 @@ public class CustomerType extends SuperGUI {
 	private Dimension dim;
 	private JPanel panel_5;
 	private JButton btn_ok;
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args)
-	{
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					CustomerType frame = new CustomerType();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.

@@ -59,24 +59,6 @@ public class Suppliers extends SuperGUI {
 	private JTextArea txt_desc;
 	private Dimension dim;
 	private JButton btn_ok;
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args)
-	{
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					Suppliers frame = new Suppliers();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.

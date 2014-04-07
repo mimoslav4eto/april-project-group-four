@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -35,7 +36,7 @@ import java.awt.FlowLayout;
 import javax.swing.BoxLayout;
 import javax.swing.JRadioButton;
 
-abstract public class OrderRentSuperGUI extends JFrame {
+abstract public class OrderRentSuperGUI extends JInternalFrame {
 
 	protected JPanel contentPane;
 	protected JTextField field_search;
@@ -55,27 +56,10 @@ abstract public class OrderRentSuperGUI extends JFrame {
 	protected JButton btn_complete;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					SuperGUI frame = new SuperGUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
 	public OrderRentSuperGUI() {
+		super("", true, true, true, true);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 570, 387);
 		contentPane = new JPanel();

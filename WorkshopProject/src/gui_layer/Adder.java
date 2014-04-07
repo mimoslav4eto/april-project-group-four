@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -32,7 +33,7 @@ import ctr_layer.SupplyLineCtr;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
 
-public class Adder extends JFrame {
+public class Adder extends JInternalFrame {
 
 	protected JPanel contentPane;
 	protected JTextField field_search;
@@ -48,28 +49,11 @@ public class Adder extends JFrame {
 	private boolean customer;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					SuperGUI frame = new SuperGUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
 	public Adder(boolean i_customer) 
 	{
+		super("", true, true, true, true);
 		customer = i_customer;
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 570, 500);

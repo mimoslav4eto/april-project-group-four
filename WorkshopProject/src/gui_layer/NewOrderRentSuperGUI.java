@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -37,7 +38,7 @@ import javax.swing.JRadioButton;
 
 import ctr_layer.CustomerCtr;
 
-abstract public class NewOrderRentSuperGUI extends JFrame {
+abstract public class NewOrderRentSuperGUI extends JInternalFrame {
 
 	protected JPanel contentPane;
 	protected CustomerCtr cust_ctr;
@@ -56,31 +57,13 @@ abstract public class NewOrderRentSuperGUI extends JFrame {
 	//private JButton btn_create;
 	private JLabel title_lbl;
 	protected int id;
-	
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					SuperGUI frame = new SuperGUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.
 	 */
 	public NewOrderRentSuperGUI(boolean i_creating, int i_id) 
 	{
+		super("", true, true, true, true);
 		creating = i_creating;
 		id = i_id;
 		cust_ctr = new CustomerCtr();

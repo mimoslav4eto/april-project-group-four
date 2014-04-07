@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -31,7 +32,7 @@ import ctr_layer.SupplyLineCtr;
 
 import java.awt.FlowLayout;
 
-public class ProductAdder extends JFrame {
+public class ProductAdder extends JInternalFrame {
 
 	protected JPanel contentPane;
 	protected JTextField field_search;
@@ -46,28 +47,12 @@ public class ProductAdder extends JFrame {
 	private Object[][] filling;
 	private JPanel panel;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					SuperGUI frame = new SuperGUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.
 	 */
 	public ProductAdder() {
+		super("", true, true, true, true);
 		prod_ctr = new SupplyLineCtr();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 570, 387);
