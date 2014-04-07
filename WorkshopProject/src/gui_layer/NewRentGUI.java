@@ -2,6 +2,7 @@ package gui_layer;
 
 
 import ctr_layer.OrderCtr;
+import ctr_layer.RentCtr;
 import ctr_layer.SupplyLineCtr;
 import ctr_layer.Utilities;
 
@@ -29,7 +30,6 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 
-import ctr_layer.OrderCtr;
 
 import javax.swing.JPanel;
 
@@ -54,17 +54,17 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.JButton;
 
-public class NewOrderGUI extends NewOrderRentSuperGUI
+public class NewRentGUI extends NewOrderRentSuperGUI
 {
 	
-	private final String[] column_names = { "Product ID", "Product name", "Product retail price", "Product price", "Amount", "Total price" };
+	private final String[] column_names = { "Product ID", "Product name", "Product retail price", "Product rent price", "Amount", "Daily price" };
 	private Object[][] filling;
-	private OrderCtr ord_ctr;
+	private RentCtr rent_ctr;
 	private SupplyLineCtr prod_ctr;
 	private JTextField id_tf;
-	private JTextField p_d_tf;
+	private JTextField b_d_tf;
+	private JTextField r_d_tf;
 	private JTextField price_tf;
-	private JTextField i_n_tf;
 	private JTextField d_d_tf;
 	private JTextField d_c_tf;
 	private JTextField c_id_tf;
@@ -80,12 +80,12 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 	private LinkedList<int[]> ids_amounts;
 	
 
-	public NewOrderGUI(boolean i_creating, int i_id)
+	public NewRentGUI(boolean i_creating, int i_id)
 	{
 		super(i_creating, i_id);
 		delivery = false;
 		is_open = false;
-		ord_ctr = new OrderCtr();
+		rent_ctr = new RentCtr();
 		prod_ctr = new SupplyLineCtr();
 		ids_amounts = new LinkedList<int[]>();
 		selected = new ArrayList<Object[]>();
@@ -94,7 +94,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 		prepare_gui();
 		if(!creating)
 		{
-			refresh_table(ord_ctr.get_order_items(id));
+			refresh_table(rent_ctr.get_rent_items(id));
 		}
 		
 		// TODO Auto-generated constructor stub
@@ -140,12 +140,12 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 		panel.add(panel_2, gbc_panel_2);
 		panel_2.setLayout(new GridLayout(0, 2, 0, 0));
 		
-		JLabel p_d_lbl = new JLabel("Payment date");
-		panel_2.add(p_d_lbl);
+		JLabel b_d_lbl = new JLabel("Begin date");
+		panel_2.add(b_d_lbl);
 		
-		p_d_tf = new DateTextField();
-		panel_2.add(p_d_tf);
-		p_d_tf.setColumns(10);
+		b_d_tf = new DateTextField();
+		panel_2.add(b_d_tf);
+		b_d_tf.setColumns(10);
 		
 		
 		JPanel panel_3 = new JPanel();
@@ -157,12 +157,12 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 		panel.add(panel_3, gbc_panel_3);
 		panel_3.setLayout(new GridLayout(0, 2, 0, 0));
 		
-		JLabel price_lbl = new JLabel("Price");
-		panel_3.add(price_lbl);
+		JLabel r_d_lbl = new JLabel("Return date");
+		panel_3.add(r_d_lbl);
 		
-		price_tf = new JTextField();
-		panel_3.add(price_tf);
-		price_tf.setColumns(10);
+		r_d_tf = new DateTextField();
+		panel_3.add(r_d_tf);
+		r_d_tf.setColumns(10);
 		
 		
 		JPanel panel_4 = new JPanel();
@@ -174,13 +174,13 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 		panel.add(panel_4, gbc_panel_4);
 		panel_4.setLayout(new GridLayout(0, 2, 0, 0));
 		
-		JLabel i_n_lbl = new JLabel("Invoice number");
-		panel_4.add(i_n_lbl);
+		JLabel price_lbl = new JLabel("Price");
+		panel_4.add(price_lbl);
 		
-		i_n_tf = new JTextField();
-		i_n_tf.setEnabled(false);
-		panel_4.add(i_n_tf);
-		i_n_tf.setColumns(10);
+		price_tf = new JTextField();
+		price_tf.setEnabled(false);
+		panel_4.add(price_tf);
+		price_tf.setColumns(10);
 		
 		
 		JPanel panel_5 = new JPanel();
@@ -305,9 +305,8 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 			completed_box.setEnabled(false);
 		}
 		
-		price_tf.setEnabled(false);
+
 		d_c_tf.setEnabled(false);
-		
 		
 		
 	}
@@ -316,8 +315,9 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 	{
 		if(!creating)
 		{
-			p_d_tf.setEnabled(false);
+			b_d_tf.setEnabled(false);
 			c_id_tf.setEnabled(false);
+			r_d_tf.setEnabled(false);
 			c_n_tf.setEnabled(false);
 			chckbxDelivery.setEnabled(false);
 			d_d_tf.setEnabled(false);
@@ -329,14 +329,13 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 		{
 			
 			id_tf.setText("ID");
-			i_n_tf.setText("Invoice nr");
 			d_d_tf.setText("");
-			p_d_tf.setText(Utilities.convert_date_to_string(new Date()));
-			p_d_tf.addFocusListener(new FocusAdapter()
+
+			b_d_tf.addFocusListener(new FocusAdapter()
 			{
 				public void focusGained(FocusEvent arg0)
 				{
-					make_normal_bg(p_d_tf);
+					make_normal_bg(b_d_tf);
 				}
 			});
 			d_d_tf.setEnabled(false);
@@ -377,6 +376,15 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 					}
 				}
 			} );
+			
+			r_d_tf.addFocusListener(new FocusAdapter()
+			{
+				public void focusGained(FocusEvent arg0)
+				{
+					make_normal_bg(r_d_tf);
+				}
+
+			});
 			chckbxDelivered.setVisible(false);
 			chckbxPaymentOnDelivery.setEnabled(false);
 			chckbxPaymentOnDelivery.addMouseListener(new MouseAdapter()
@@ -426,13 +434,13 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 	
 	private void fill_fields()
 	{
-		Object[] data = ord_ctr.get_order(id);
+		Object[] data = rent_ctr.get_rent(id);
 		if(data != null)
 		{
 			id_tf.setText(String.valueOf(data[0]));
-			p_d_tf.setText(String.valueOf(data[1]));
-			price_tf.setText(String.valueOf(data[2]));
-			i_n_tf.setText(String.valueOf(data[3]));
+			b_d_tf.setText(String.valueOf(data[1]));
+			r_d_tf.setText(String.valueOf(data[2]));
+			price_tf.setText(String.valueOf(data[3]));
 			c_id_tf.setText(String.valueOf(data[4]));
 			c_n_tf.setText(String.valueOf(data[5]));
 			boolean has_delivery = (data[6] != null);
@@ -454,7 +462,8 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 	{
 		boolean correct = true;
 		String c_id = c_id_tf.getText();
-		String payment_date = p_d_tf.getText();
+		String begin_date = b_d_tf.getText();
+		String return_date = r_d_tf.getText();
 		int cust_id = -1;
 		if(is_number(c_id))
 		{
@@ -470,13 +479,25 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 			correct = false;
 			make_error_bg(c_id_tf);
 		}
-		if(!Utilities.valid_date(payment_date))
+		if(!Utilities.valid_date(begin_date))
 		{
 			correct = false;
-			make_error_bg(p_d_tf);
+			make_error_bg(b_d_tf);
 		}
 		
-		boolean complete = false;
+		if(!Utilities.valid_date(return_date))
+		{
+			correct = false;
+			make_error_bg(r_d_tf);
+		}
+		
+		if(Utilities.day_difference(begin_date, return_date) <=0)
+		{
+			correct = false;
+			make_error_bg(b_d_tf);
+			make_error_bg(r_d_tf);
+		}
+
 		if(ids_amounts.isEmpty())
 		{
 			JOptionPane.showMessageDialog(this, "You cannot make an empty order.\nAdd some products to it!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -495,17 +516,14 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 			}
 			if(correct)
 			{
-				ord_ctr.add_order_with_del(cust_id, pay_on_delivery, delivery_date, payment_date, ids_amounts, complete);
+				rent_ctr.add_rent_with_del(cust_id, pay_on_delivery, delivery_date, begin_date, return_date, ids_amounts);
 				this.dispose();
 			}
 		}
 		else if(correct)
 		{
-			if (payment_date.equals(Utilities.convert_date_to_string(new Date())))
-			{
-				complete = true;
-			}
-			ord_ctr.add_order_without_del(cust_id, payment_date, ids_amounts, complete);
+
+			rent_ctr.add_rent_without_del(cust_id, begin_date, return_date, ids_amounts);
 			this.dispose();
 			
 		}
@@ -615,9 +633,9 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 		data[0] = prod_data[0];
 		data[1] = prod_data[1];
 		data[2] = prod_data[2];
-		data[3] = prod_data[3];
+		data[3] = prod_data[4];
 		data[4] = amount;
-		data[5] = (float)prod_data[3]*amount;
+		data[5] = (float)prod_data[4]*amount;
 		return data;
 	}
 	
@@ -691,18 +709,29 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 			int cust_id = Integer.parseInt(c_id);
 			if(cust_ctr.customer_exists(cust_id))
 			{
-				prices = ord_ctr.calc_order_price(cust_id, ids_amounts, chckbxPaymentOnDelivery.isSelected(), delivery);
-				price_tf.setText(String.valueOf(prices[0]));
-				if (delivery)
+				String begin_date = b_d_tf.getText();
+				String return_date = r_d_tf.getText();
+				if(Utilities.valid_date(begin_date) && Utilities.valid_date(return_date) && Utilities.day_difference(begin_date, return_date) >= 0)
 				{
-					d_c_tf.setText(String.valueOf(prices[1]));
+					prices = rent_ctr.calc_rent_price(cust_id, ids_amounts, chckbxPaymentOnDelivery.isSelected(), delivery, begin_date, return_date);
 					
+				}
+				else
+				{
+					prices[0] = 0;
+					prices[1] = 0;
 				}
 			}
 			else
 			{
 				prices[0] = 0;
 				prices[1] = 0;
+			}
+			price_tf.setText(String.valueOf(prices[0]));
+			if (delivery)
+			{
+				d_c_tf.setText(String.valueOf(prices[1]));
+				
 			}
 		}
 	}
@@ -711,7 +740,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 	
 	class AddProduct extends Adder
 	{
-		private String[] column_names = {"ID", "Name", "Price", "Amount"};
+		private String[] column_names = {"ID", "Name", "Daily price", "Amount"};
 		private Object[][] filling;
 		public AddProduct()
 		{
@@ -736,7 +765,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 			{
 				filling[i][0] = data[i][0];
 				filling[i][1] = data[i][1];
-				filling[i][2] = data[i][3];
+				filling[i][2] = data[i][4];
 				filling[i][3] = data[i][5];
 			}
 			fill_table(filling, column_names);
@@ -805,7 +834,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 				data = prod_ctr.get_product_by_id(id);
 				filling[0][0] = data[0];
 				filling[0][1] = data[1];
-				filling[0][2] = data[3];
+				filling[0][2] = data[4];
 				filling[0][3] = data[5];
 				}
 			}
@@ -820,7 +849,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 					{
 						filling[i][0] = data[i][0];
 						filling[i][1] = data[i][1];
-						filling[i][2] = data[i][3];
+						filling[i][2] = data[i][4];
 						filling[i][3] = data[i][5];
 					}
 				}
@@ -839,7 +868,7 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 	
 	class AddCustomer extends Adder
 	{
-		private String[] column_names = { "ID", "Name", "Address", "City", "Discount %", "Price qualified for discount", "Price qualified for free shipment" };
+		private String[] column_names = { "ID", "Name", "Address", "City", "Price qualified for free shipment" };
 		private Object[][] filling;
 		public AddCustomer()
 		{
@@ -859,16 +888,14 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 		
 		private void refresh_small(Object[][] data)
 		{
-			filling = new Object[data.length][7];
+			filling = new Object[data.length][5];
 			for(int i = 0; i< data.length; i++)
 			{
 				filling[i][0] = data[i][0];
 				filling[i][1] = data[i][1];
 				filling[i][2] = data[i][2];
 				filling[i][3] = data[i][4];
-				filling[i][4] = data[i][9];
-				filling[i][5] = data[i][10];
-				filling[i][6] = data[i][11];
+				filling[i][4] = data[i][11];
 			}
 			fill_table(filling, column_names);
 		}
@@ -905,15 +932,13 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 				int id = Integer.parseInt(num);
 				if (cust_ctr.customer_exists(id))
 				{
-					filling = new Object[1][7];
+					filling = new Object[1][5];
 					data = cust_ctr.get_customer_by_id(id);
 					filling[0][0] = data[0];
 					filling[0][1] = data[1];
 					filling[0][2] = data[2];
 					filling[0][3] = data[4];
-					filling[0][4] = data[9];
-					filling[0][5] = data[10];
-					filling[0][6] = data[11];
+					filling[0][4] = data[11];
 				}
 			}
 			else
@@ -922,16 +947,14 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 				data = cust_ctr.get_customer_by_name(num);
 				if (data != null)
 				{
-					filling = new Object[data.length][7];
+					filling = new Object[data.length][5];
 					for(int i = 0; i< data.length; i++)
 					{
 						filling[i][0] = data[i][0];
 						filling[i][1] = data[i][1];
 						filling[i][2] = data[i][2];
 						filling[i][3] = data[i][4];
-						filling[i][4] = data[i][9];
-						filling[i][5] = data[i][10];
-						filling[i][6] = data[i][11];
+						filling[i][4] = data[i][11];
 					}
 				}
 			}

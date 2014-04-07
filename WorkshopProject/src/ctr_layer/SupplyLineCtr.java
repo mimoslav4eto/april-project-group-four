@@ -131,6 +131,18 @@ public class SupplyLineCtr
 		return false;
 	}
 	
+	public boolean increase_amount(int product_id, int amount)
+	{
+		Product prod = find_product(product_id, false);
+		prod.setAmount(prod.getAmount()+amount);
+		if (db_p.update_product(prod) == 1)
+		{
+			all_products.put(product_id, prod);
+			return true;
+		}
+		return false;
+	}
+	
 	public boolean product_exists(int product_id)
 	{
 		return find_product(product_id, false) != null;

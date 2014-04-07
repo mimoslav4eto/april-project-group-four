@@ -134,11 +134,16 @@ public class Rent
 		items.add(rli);
 	}
 	
-	public float calculate_price(Date begin, Date end)
+	public void calculate_price(Date begin, Date end)
 	{
 		if(end.getTime()!= return_date.getTime())
 		{
 			return_date = end;
+			if(begin.getTime() <= end.getTime())
+			{
+				date = end;
+				rent_price = 0;
+			}
 		}
 		rent_price = 0;
 		long day_difference = count_days(begin, end);
@@ -146,7 +151,7 @@ public class Rent
 		{
 			rent_price += item.getDaily_price();
 		}
-		return rent_price * day_difference;
+		rent_price *= day_difference;
 	}
 	
 	private long count_days(Date begin, Date end)

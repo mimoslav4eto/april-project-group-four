@@ -6,10 +6,12 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import model_layer.Customer;
+import model_layer.CustomerType;
 import model_layer.Delivery;
 import model_layer.Rent;
 import model_layer.Product;
 import model_layer.RentLineItem;
+import db_layer.DBCustomer;
 import db_layer.DBRent;
 import db_layer.DBProduct;
 
@@ -17,11 +19,21 @@ public class RentCtr
 {
 	private DBRent db;
 	private DBProduct db_p;
+	private SupplyLineCtr prod_ctr;
+	private DBCustomer db_c;
 	private static Rent rent;
+	private static Customer cust;
 	public RentCtr()
 	{
 		db = new DBRent();
 		db_p = new DBProduct();
+		db_c = new DBCustomer();
+		prod_ctr = new SupplyLineCtr();
+		
+		if(cust == null)
+		{
+			cust = new Customer();
+		}
 
 		if(rent == null)
 		{
@@ -69,9 +81,12 @@ public class RentCtr
 
 		for(int[] data : ids_amounts)
 		{
-			prod = db_p.find_product(data[0], false);
-			item = new RentLineItem(prod, data[1]);
+			int id = data[0];
+			int amount = data[1];
+			prod = db_p.find_product(id, false);
+			item = new RentLineItem(prod, amount);
 			items.add(item);
+			prod_ctr.subtract_amount(id, amount);
 			
 		}
 		rent = new Rent(cust, d, r_d, items, false);
@@ -91,13 +106,53 @@ public class RentCtr
 		cust.setId(customer_id);
 		for(int[] data : ids_amounts)
 		{
-			prod = db_p.find_product(data[0], false);
-			item = new RentLineItem(prod, data[1]);
+			int id = data[0];
+			int amount = data[1];
+			prod = db_p.find_product(id, false);
+			item = new RentLineItem(prod, amount);
 			items.add(item);
+			prod_ctr.subtract_amount(id, amount);
 			
 		}
 		rent = new Rent(cust, d, r_d, items, false);
 		return db.insert_rent(rent) == 1;
+	}
+	
+	public float[] calc_rent_price(int cust_id, LinkedList<int[]> ids_amounts, boolean pay_on_delivery, boolean delivery, String start_date, String end_date)
+	{
+		Date begin = Utilities.convert_string_to_date(start_date);
+		Date end = Utilities.convert_string_to_date(end_date);
+		int days = (int)(end.getTime() - begin.getTime())/(1000*60*60*24);
+		float[] prices = new float[2];
+		float tot_price = 0;
+		float del_cost = 0; 
+		if(cust.getId()!= cust_id)
+		{
+			cust=db_c.find_customer(cust_id);
+		}
+		CustomerType ct = cust.getCust_type();
+		for(int[] data : ids_amounts)
+		{
+			tot_price += prod_ctr.calculate_rent_cost(data[0], data[1], days);
+		}
+		float price_qual_for_free = ct.getPrice_qual_for_free_shipment();
+		if(delivery)
+		{
+			if(price_qual_for_free!= -1 && tot_price > price_qual_for_free)
+			{
+				del_cost = 0;
+			}
+			else
+			{
+				del_cost = new Delivery(pay_on_delivery).getCost(); 
+			}
+			
+		}
+		tot_price += del_cost;
+		prices[0] = tot_price;
+		prices[1] = del_cost;
+		return prices;
+
 	}
 	
 	public boolean update_delivery_status(int rent_id)
@@ -109,25 +164,24 @@ public class RentCtr
 		return db.update_rent(rent) == 1;
 	}
 	
-	public float finish_rent(int id, boolean recalculate_price)
+	public boolean finish_rent(int id, boolean recalculate_price)
 	{
-		rent = find_rent(id, false);
+		rent = find_rent(id, true);
 		rent.setComplete(true);
-		float price; 
+		Delivery del = rent.getDelivery();
+		del.setIn_progress(false);
+		rent.setDelivery(del);
 		if (recalculate_price)
 		{
-			price = rent.calculate_price(rent.getDate(), new Date());
+			rent.calculate_price(rent.getDate(), new Date());
 		}
-		else
+		ArrayList<RentLineItem> items = rent.getItems();
+		for(RentLineItem item: items)
 		{
-			price = rent.getRent_price();
+			prod_ctr.increase_amount(item.getProduct().getId(), item.getAmount());
 		}
-		boolean succeed = db.update_rent(rent) == 1;
-		if (succeed)
-		{
-			return price;
-		}
-		return -1;
+		
+		return db.update_rent(rent) == 1;
 	}
 	
 	public boolean rent_exists(int id)
@@ -180,12 +234,14 @@ public class RentCtr
 		{
 			float delivery_cost = del.getCost();
 			String delivery_date = Utilities.convert_date_to_string(del.getDate());
-			Object[] data = { id, date, return_date, rent_price, delivery_cost, delivery_date, cust_id, cust_name, complete };
+			boolean in_progress = del.isIn_progress();
+			boolean pay_on_delivery = del.isPay_on_delivery();
+			Object[] data = { id, date, return_date, rent_price, cust_id, cust_name, in_progress, pay_on_delivery, delivery_date,  delivery_cost, complete };
 			return data;
 		}
 		else
 		{
-			Object[] data = {  id, date, return_date, rent_price, null, null, cust_id, cust_name, complete };
+			Object[] data = {  id, date, return_date, rent_price, cust_id, cust_name, null, null, null, null, complete };
 			return data;
 		}
 		
