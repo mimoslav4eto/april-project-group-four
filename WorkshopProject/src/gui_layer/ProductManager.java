@@ -35,7 +35,7 @@ public class ProductManager extends JFrame {
 			public void run() {
 				try {
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					CustomerManager frame = new CustomerManager(-1, 0);
+					ProductManager frame = new ProductManager(-1, 0);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

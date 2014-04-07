@@ -87,6 +87,26 @@ public class DBSuppliesWith
 		return rc;
 	}
 	
+	public boolean relation_exists(int p_id, int s_id)
+	{
+		try
+		{
+			PreparedStatement stmt = con.prepareStatement("SELECT * FROM Supplies WHERE product_id=? AND supplier_id=?");
+			stmt.setInt(1, p_id);
+			stmt.setInt(2, s_id);
+			stmt.setQueryTimeout(5);
+			ResultSet results = stmt.executeQuery();
+			stmt.close();
+			return results.next();
+		}
+		catch(SQLException se)
+		{
+			System.out.println("Exception while looking for relation: " + se);
+			
+		}
+		return false;
+	}
+	
 	public ArrayList<Supplier> find_suppliers_of(int product_id)
 	{
 		ArrayList<Supplier> suppliers = new ArrayList<Supplier>();
@@ -94,7 +114,7 @@ public class DBSuppliesWith
 		String query = "SELECT e.id, e.name, e.address, e.zipcode, e.phone_nr, e.email, "
 				+ "z.city, z.country, s.CVR, s.description "
 				+ "FROM Supplies AS sups, Entity AS e, ZipCity AS z, Supplier AS s "
-				+ "WHERE sups.supplier_id = s.id AND e.id = s.id AND e.type = 'supplier' AND sups.product_id = ?";
+				+ "WHERE e.zipcode = z.zipcode AND sups.supplier_id = s.id AND e.id = s.id AND e.type = 'supplier' AND sups.product_id = ?";
 		try
 		{
 			PreparedStatement ps = UtilityFunctions.prepare_statement(con, query, "", product_id);
