@@ -470,6 +470,12 @@ public class RentGUI extends OrderRentSuperGUI
 			{
 				NewRentGUI no = new NewRentGUI(false, (int)table.getModel().getValueAt(row_index, 0));
 				no.setVisible(true);
+				this.getDesktopPane().add(no);
+				try 
+				{
+			        no.setSelected(true);
+			    } catch (java.beans.PropertyVetoException e) {}
+				
 				
 			}
 		}
@@ -482,6 +488,11 @@ public class RentGUI extends OrderRentSuperGUI
 
 		NewRentGUI no = new NewRentGUI(true, -1);
 		no.setVisible(true);
+		this.getDesktopPane().add(no);
+		try 
+		{
+	        no.setSelected(true);
+	    } catch (java.beans.PropertyVetoException e) {}
 
 		
 	}

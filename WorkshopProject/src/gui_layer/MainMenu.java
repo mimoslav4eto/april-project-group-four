@@ -77,7 +77,13 @@ public class MainMenu extends JFrame
 	private void make_suppliers()
 	{
 		JMenu mnSupplier = new JMenu("Suppliers");
-		mnSupplier.addActionListener(new ActionListener()
+		
+		menuBar.add(mnSupplier);
+		
+		JMenuItem mntmManageSuppliers = new JMenuItem("Manage suppliers");
+		mnSupplier.add(mntmManageSuppliers);
+		
+		mntmManageSuppliers.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
@@ -88,7 +94,6 @@ public class MainMenu extends JFrame
 				frame.setVisible(true);
 			}
 		});
-		menuBar.add(mnSupplier);
 	}
 	private void make_program()
 	{
@@ -221,7 +226,7 @@ public class MainMenu extends JFrame
 
 			public void actionPerformed(ActionEvent e) {
 
-				NewRentGUI frame = new NewRentGUI(false,0);
+				NewRentGUI frame = new NewRentGUI(true, -1);
 				set_location();
 				frame.setLocation(position[0]+3, position[1]+3);
 				desktopPane.add(frame);

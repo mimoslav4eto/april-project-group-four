@@ -104,7 +104,7 @@ public class NewRentGUI extends NewOrderRentSuperGUI
 	private void make_data_display()
 	{
 		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(new EmptyBorder(1, 2, 1, 3), "Order Data", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel.setBorder(new TitledBorder(new EmptyBorder(1, 2, 1, 3), "Rent Data", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		getContentPane().add(panel, BorderLayout.EAST);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[]{172, 0};
@@ -366,7 +366,7 @@ public class NewRentGUI extends NewOrderRentSuperGUI
 			
 			c_id_tf.addMouseListener(new MouseAdapter()
 			{
-				public void mouseClicked(MouseEvent e)
+				public void mouseClicked(MouseEvent arg0)
 				{
 					if(!is_open)
 					{
@@ -378,7 +378,6 @@ public class NewRentGUI extends NewOrderRentSuperGUI
 						{
 					        ac.setSelected(true);
 					    } catch (java.beans.PropertyVetoException pve) {}
-						
 					}
 				}
 			} );
@@ -393,16 +392,16 @@ public class NewRentGUI extends NewOrderRentSuperGUI
 			});
 			chckbxDelivered.setVisible(false);
 			chckbxPaymentOnDelivery.setEnabled(false);
-			chckbxPaymentOnDelivery.addMouseListener(new MouseAdapter()
+			chckbxPaymentOnDelivery.addActionListener(new ActionListener()
 			{
-				public void mouseClicked(MouseEvent arg0)
+				public void actionPerformed(ActionEvent arg0)
 				{
 					display_prices();
 				}
 			});
-			chckbxDelivery.addMouseListener(new MouseAdapter()
+			chckbxDelivery.addActionListener(new ActionListener()
 			{
-				public void mouseClicked(MouseEvent arg0)
+				public void actionPerformed(ActionEvent arg0)
 				{
 					if (delivery)
 					{

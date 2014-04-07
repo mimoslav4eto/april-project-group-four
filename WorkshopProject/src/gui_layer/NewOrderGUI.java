@@ -384,16 +384,16 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 			} );
 			chckbxDelivered.setVisible(false);
 			chckbxPaymentOnDelivery.setEnabled(false);
-			chckbxPaymentOnDelivery.addMouseListener(new MouseAdapter()
+			chckbxPaymentOnDelivery.addActionListener(new ActionListener()
 			{
-				public void mouseClicked(MouseEvent arg0)
+				public void actionPerformed(ActionEvent arg0)
 				{
 					display_prices();
 				}
 			});
-			chckbxDelivery.addMouseListener(new MouseAdapter()
+			chckbxDelivery.addActionListener(new ActionListener()
 			{
-				public void mouseClicked(MouseEvent arg0)
+				public void actionPerformed(ActionEvent arg0)
 				{
 					if (delivery)
 					{

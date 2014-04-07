@@ -104,7 +104,7 @@ abstract public class NewOrderRentSuperGUI extends JInternalFrame {
 		panel_1.add(title_lbl);
 		if(creating)
 		{
-			title_lbl.setText("Create new Order");
+			title_lbl.setText("Create new");
 
 			JButton btn_delete = new JButton("Delete");
 			btn_delete.addMouseListener(new MouseAdapter()
@@ -150,7 +150,7 @@ abstract public class NewOrderRentSuperGUI extends JInternalFrame {
 		}
 		else
 		{
-			title_lbl.setText("Order details");
+			title_lbl.setText("Details");
 		}
 		
 		
