@@ -68,12 +68,28 @@ public class MainMenu extends JFrame
 		make_rents();
 		make_products();
 		make_customers();
+		make_suppliers();
 		make_program();
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 	}
-	
+	private void make_suppliers()
+	{
+		JMenu mnSupplier = new JMenu("Suppliers");
+		mnSupplier.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				Suppliers frame = new Suppliers();
+				set_location();
+				frame.setLocation(position[0]+3, position[1]+3);
+				desktopPane.add(frame);
+				frame.setVisible(true);
+			}
+		});
+		menuBar.add(mnSupplier);
+	}
 	private void make_program()
 	{
 		JMenu mnProgram = new JMenu("Program");
@@ -108,8 +124,8 @@ public class MainMenu extends JFrame
 	
 	private void make_customers()
 	{
-		JMenu customers = new JMenu("Customers");
-		menuBar.add(customers);
+		JMenu mnCustomers = new JMenu("Customers");
+		menuBar.add(mnCustomers);
 
 		JMenuItem mntmNewMenuItem = new JMenuItem("Manage Customers");
 		mntmNewMenuItem.addActionListener(new ActionListener()
@@ -123,7 +139,7 @@ public class MainMenu extends JFrame
 				frame.setVisible(true);
 			}
 		});
-		customers.add(mntmNewMenuItem);
+		mnCustomers.add(mntmNewMenuItem);
 
 		JMenuItem mntmManageGroups = new JMenuItem("Manage Customer Types");
 		mntmManageGroups.addActionListener(new ActionListener()
@@ -137,7 +153,7 @@ public class MainMenu extends JFrame
 				frame.setVisible(true);
 			}
 		});
-		customers.add(mntmManageGroups);
+		mnCustomers.add(mntmManageGroups);
 	}
 	
 	private void make_products()
@@ -197,8 +213,8 @@ public class MainMenu extends JFrame
 	
 	private void make_rents()
 	{
-		JMenu mnNewMenu = new JMenu("Rent");
-		menuBar.add(mnNewMenu);
+		JMenu mnRent = new JMenu("Rent");
+		menuBar.add(mnRent);
 		
 		JMenuItem mntmNewLease = new JMenuItem("New Rent");
 		mntmNewLease.addActionListener(new ActionListener() {
@@ -214,7 +230,7 @@ public class MainMenu extends JFrame
 			}
 
 		});
-		mnNewMenu.add(mntmNewLease);
+		mnRent.add(mntmNewLease);
 		
 		JMenuItem mntmManageLeases = new JMenuItem("Manage Rents");
 		mntmManageLeases.addActionListener(new ActionListener() {
@@ -226,7 +242,7 @@ public class MainMenu extends JFrame
 				frame.setVisible(true);
 			}
 		});
-		mnNewMenu.add(mntmManageLeases);
+		mnRent.add(mntmManageLeases);
 	}
 	
 	private void set_location()
