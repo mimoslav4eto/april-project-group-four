@@ -53,8 +53,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.JButton;
+
 
 public class NewOrderGUI extends NewOrderRentSuperGUI
 {
@@ -375,6 +374,10 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 						is_open = true;
 						AddCustomer ac = new AddCustomer();
 						ac.setVisible(true);
+						getDesktopPane().add(ac);
+						try {
+					        ac.setSelected(true);
+					    } catch (java.beans.PropertyVetoException pve) {}
 						
 					}
 				}
@@ -568,6 +571,10 @@ public class NewOrderGUI extends NewOrderRentSuperGUI
 			AddProduct a = new AddProduct();
 			
 			a.setVisible(true);
+			getDesktopPane().add(a);
+			try {
+		        a.setSelected(true);
+		    } catch (java.beans.PropertyVetoException e) {}
 			is_open = true;
 		}
 	}

@@ -29,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JCheckBox;
 
 import java.awt.GridLayout;
+import java.beans.PropertyVetoException;
 
 import javax.swing.border.TitledBorder;
 import javax.swing.border.EmptyBorder;
@@ -441,6 +442,11 @@ public class OrderGUI extends OrderRentSuperGUI
 			{
 				NewOrderGUI no = new NewOrderGUI(false, (int)table.getModel().getValueAt(row_index, 0));
 				no.setVisible(true);
+				this.getDesktopPane().add(no);
+				try {
+			        no.setSelected(true);
+			    } catch (java.beans.PropertyVetoException pve) {}
+				
 				
 			}
 		}
@@ -453,6 +459,10 @@ public class OrderGUI extends OrderRentSuperGUI
 
 		NewOrderGUI no = new NewOrderGUI(true, -1);
 		no.setVisible(true);
+		this.getDesktopPane().add(no);
+		try {
+	        no.setSelected(true);
+	    } catch (java.beans.PropertyVetoException pve) {}
 
 		
 	}
